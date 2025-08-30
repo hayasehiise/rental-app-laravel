@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class RentalUnit extends Model
 {
@@ -15,6 +16,10 @@ class RentalUnit extends Model
     ];
 
     // Relationship
+    public function image(): HasMany
+    {
+        return $this->hasMany(RentalImage::class);
+    }
     public function rental(): BelongsTo
     {
         return $this->belongsTo(Rental::class);

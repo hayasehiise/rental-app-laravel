@@ -18,8 +18,4 @@ class Rental extends Model
     {
         return $this->hasMany(RentalUnit::class);
     }
-    public function images(): HasMany
-    {
-        return $this->hasMany(RentalImage::class);
-    }
 }

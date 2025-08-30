@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class RentalImage extends Model
 {
     protected $fillable = [
-        'rental_id',
+        'rental_unit_id',
         'path',
     ];
 
-    public function rental(): BelongsTo
+    public function unit(): BelongsTo
     {
-        return $this->belongsTo(Rental::class);
+        return $this->belongsTo(RentalUnit::class);
     }
 }
