@@ -21,7 +21,7 @@ class RentalForm
                     ->options([
                         'lapangan' => 'Lapangan',
                         'gedung' => 'Gedung',
-                        'kendaraan' => 'Kendaraan'
+                        'kendaraan' => 'Kendaraan',
                     ])
                     ->required(),
                 Textarea::make('description')

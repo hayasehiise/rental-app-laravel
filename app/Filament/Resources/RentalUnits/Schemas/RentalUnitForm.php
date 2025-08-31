@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\Rentals\Resources\RentalUnits\Schemas;
+namespace App\Filament\Resources\RentalUnits\Schemas;
 
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
@@ -12,6 +13,9 @@ class RentalUnitForm
     {
         return $schema
             ->components([
+                Hidden::make('rental_id')
+                    ->default(fn() => request()->query('rental_id'))
+                    ->required(),
                 TextInput::make('name')
                     ->label('Nama Unit')
                     ->required(),

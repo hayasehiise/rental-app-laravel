@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Rentals\Tables;
 
+use App\Filament\Resources\RentalUnits\RentalUnitResource;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -19,22 +21,36 @@ class RentalsTable
                     ->label('Nama Rental')
                     ->searchable(),
                 TextColumn::make('type')
-                    ->label('Tipe'),
-                TextColumn::make('units_count')
-                    ->label('Total Item')
-                    ->counts('units'),
+                    ->label('Type')
+                    ->badge()
+                    ->color('info')
+                    ->icon(fn(string $state) => match ($state) {
+                        'lapangan' => 'tabler-building-stadium',
+                        'gedung' => 'tabler-building',
+                        'kendaraan' => 'tabler-car',
+                        default     => 'heroicon-o-question-mark-circle',
+                    })
+                    ->formatStateUsing(fn(string $state) => $state ? ucwords($state) : '-'),
                 TextColumn::make('created_at')
-                    ->label('Dibuat')
-                    ->sortable()
-                    ->date('d/m/Y'),
+                    ->date('d/m/Y')
+                    ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->recordActions([
+                Action::make('manageUnits')
+                    ->label('Manage Units')
+                    ->icon('heroicon-o-building-office-2')
+                    ->url(fn($record) => RentalUnitResource::getUrl('index', [
+                        'rental_id' => $record->id,
+                    ])),
                 EditAction::make()
-                    ->label('Manage & Edit'),
-                DeleteAction::make(),
+                    ->label('')
+                    ->button(),
+                DeleteAction::make()
+                    ->label('')
+                    ->button(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

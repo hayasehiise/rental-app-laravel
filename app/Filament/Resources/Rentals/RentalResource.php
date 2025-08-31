@@ -5,8 +5,6 @@ namespace App\Filament\Resources\Rentals;
 use App\Filament\Resources\Rentals\Pages\CreateRental;
 use App\Filament\Resources\Rentals\Pages\EditRental;
 use App\Filament\Resources\Rentals\Pages\ListRentals;
-use App\Filament\Resources\Rentals\RelationManagers\UnitsRelationManager;
-use App\Filament\Resources\Rentals\Resources\RentalUnits\RentalUnitResource;
 use App\Filament\Resources\Rentals\Schemas\RentalForm;
 use App\Filament\Resources\Rentals\Tables\RentalsTable;
 use App\Models\Rental;
@@ -22,9 +20,9 @@ class RentalResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'name';
+    protected static ?int $navigationSort = 1;
 
-    protected static ?string $relatedResource = RentalUnitResource::class;
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema
     {
@@ -39,7 +37,7 @@ class RentalResource extends Resource
     public static function getRelations(): array
     {
         return [
-            'units' => UnitsRelationManager::class,
+            //
         ];
     }
 
