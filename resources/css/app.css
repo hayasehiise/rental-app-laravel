@@ -1,9 +1,46 @@
 @import 'tailwindcss';
+@plugin "daisyui" {
+    themes: simple --default;
+}
+@plugin "daisyui/theme" {
+    name: 'simple';
+    default: true;
+    prefersdark: false;
+    color-scheme: 'light';
+    --color-base-100: oklch(98% 0.002 247.839);
+    --color-base-200: oklch(96% 0.003 264.542);
+    --color-base-300: oklch(92% 0.006 264.531);
+    --color-base-content: oklch(21% 0.034 264.665);
+    --color-primary: oklch(58% 0.158 241.966);
+    --color-primary-content: oklch(97% 0.013 236.62);
+    --color-secondary: oklch(57% 0.245 27.325);
+    --color-secondary-content: oklch(97% 0.013 17.38);
+    --color-accent: oklch(44% 0.017 285.786);
+    --color-accent-content: oklch(98% 0 0);
+    --color-neutral: oklch(37% 0.034 259.733);
+    --color-neutral-content: oklch(98% 0.002 247.839);
+    --color-info: oklch(68% 0.169 237.323);
+    --color-info-content: oklch(97% 0.013 236.62);
+    --color-success: oklch(72% 0.219 149.579);
+    --color-success-content: oklch(98% 0.018 155.826);
+    --color-warning: oklch(70% 0.213 47.604);
+    --color-warning-content: oklch(98% 0.016 73.684);
+    --color-error: oklch(65% 0.241 354.308);
+    --color-error-content: oklch(97% 0.014 343.198);
+    --radius-selector: 0.5rem;
+    --radius-field: 0.5rem;
+    --radius-box: 1rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 0;
+    --noise: 0;
+}
 
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans:
+        'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
