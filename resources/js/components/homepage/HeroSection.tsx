@@ -2,7 +2,7 @@ import { gsap } from 'gsap';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 export default function HeroSection() {
-    const heroWords = ['Lapangan', 'Gedung', 'Ruangan', 'Kendaraan'];
+    const heroWords = ['Lapangan', 'Gedung', 'Kendaraan'];
     const bgImages = useMemo(() => ['/assets/hero-bg-1.webp', '/assets/hero-bg-2.webp', '/assets/hero-bg-3.webp'], []);
     const [wordIndex, setWordIndex] = useState(0);
     const [bgIndex, setBgIndex] = useState(0);

@@ -30,14 +30,14 @@ export default function Layout({ children }) {
             <header>
                 <div className="fixed top-0 z-[49] navbar bg-base-100 shadow-sm" ref={navbarRef}>
                     <div className="flex-1">
-                        <Link href={'#'} className="btn btn-ghost">
+                        <Link href={'/'} className="btn btn-ghost">
                             Rental App
                         </Link>
                     </div>
                     <div className="flex-none">
                         <ul className="menu menu-horizontal pr-10">
                             <li>
-                                <Link href={'#'}>
+                                <Link href={'/'}>
                                     <FaHome />
                                     Home
                                 </Link>
@@ -50,19 +50,19 @@ export default function Layout({ children }) {
                                     </summary>
                                     <ul className="z-50 rounded-t-none bg-base-100 p-2">
                                         <li>
-                                            <Link href="#">
+                                            <Link href={route('rental.index', { type: 'lapangan' })}>
                                                 <MdOutlineStadium />
                                                 Lapangan
                                             </Link>
                                         </li>
                                         <li>
-                                            <Link href="#">
+                                            <Link href={route('rental.index', { type: 'gedung' })}>
                                                 <FaRegBuilding />
                                                 Gedung
                                             </Link>
                                         </li>
                                         <li>
-                                            <Link href="#">
+                                            <Link href={route('rental.index', { type: 'kendaraan' })}>
                                                 <FaCar />
                                                 Kendaraan
                                             </Link>

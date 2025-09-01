@@ -3,7 +3,11 @@ import { Link } from '@inertiajs/react';
 import { FaBuilding, FaCar } from 'react-icons/fa';
 import { MdArrowOutward, MdStadium } from 'react-icons/md';
 
-export default function FeaturedRental(props) {
+interface PropsType {
+    totalUnit: number;
+}
+export default function FeaturedRental(props: PropsType) {
+    const { totalUnit } = props;
     return (
         <div className="min-h-[80dvh]">
             <div className="flex flex-col">
@@ -69,7 +73,7 @@ export default function FeaturedRental(props) {
                 </div>
                 <div className="flex justify-center">
                     <Link href={route('rental.index')} className="mx-ato btn my-5 w-42 rounded-none p-6 btn-primary">
-                        ... {props.totalUnit} Units More
+                        ... {totalUnit} Units More
                     </Link>
                 </div>
             </div>
