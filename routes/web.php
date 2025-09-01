@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\Homepage;
+use App\Http\Controllers\Rental;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('index');
-})->name('home');
+Route::get('/', [Homepage::class, 'index'])->name('home');
+Route::get('/rental', [Rental::class, 'index'])->name('rental.index');

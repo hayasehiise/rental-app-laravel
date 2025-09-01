@@ -47,7 +47,7 @@ export default function HeroSection() {
     }, [bgIndex, showLayer1, bgImages]);
 
     return (
-        <div className="relative hero min-h-screen overflow-hidden">
+        <div className="relative hero min-h-[100dvh] overflow-hidden">
             <div
                 ref={layer1Ref}
                 className="absolute inset-0 bg-cover bg-center"

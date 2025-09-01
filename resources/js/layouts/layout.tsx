@@ -1,7 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { useEffect, useRef } from 'react';
 
-import { FaCar, FaHome, FaPhone, FaRegBuilding } from 'react-icons/fa';
+import { FaCar, FaFacebook, FaGlobe, FaHome, FaInstagramSquare, FaPhone, FaRegBuilding } from 'react-icons/fa';
 import { MdOutlineStadium } from 'react-icons/md';
 import { SiHomeassistantcommunitystore } from 'react-icons/si';
 
@@ -28,7 +28,7 @@ export default function Layout({ children }) {
     return (
         <main>
             <header>
-                <div className="navbar bg-base-100 shadow-sm" ref={navbarRef}>
+                <div className="fixed top-0 z-[49] navbar bg-base-100 shadow-sm" ref={navbarRef}>
                     <div className="flex-1">
                         <Link href={'#'} className="btn btn-ghost">
                             Rental App
@@ -48,7 +48,7 @@ export default function Layout({ children }) {
                                         <SiHomeassistantcommunitystore />
                                         Rental
                                     </summary>
-                                    <ul className="rounded-t-none bg-base-100 p-2">
+                                    <ul className="z-50 rounded-t-none bg-base-100 p-2">
                                         <li>
                                             <Link href="#">
                                                 <MdOutlineStadium />
@@ -81,6 +81,25 @@ export default function Layout({ children }) {
                 </div>
             </header>
             <article>{children}</article>
+            <footer className="sm: footer footer-horizontal bg-neutral p-10 text-neutral-content">
+                <aside>
+                    <p className="text-3xl font-bold">Rental App</p>
+                </aside>
+                <nav>
+                    <h6 className="footer-title">Social</h6>
+                    <div className="grid grid-flow-col gap-4">
+                        <Link href={'#'} className="flex items-center gap-2">
+                            <FaInstagramSquare className="h-10 w-10" />
+                        </Link>
+                        <Link href={'#'} className="flex items-center gap-2">
+                            <FaFacebook className="h-10 w-10" />
+                        </Link>
+                        <Link href={'#'} className="flex items-center gap-2">
+                            <FaGlobe className="h-10 w-10" />
+                        </Link>
+                    </div>
+                </nav>
+            </footer>
         </main>
     );
 }
