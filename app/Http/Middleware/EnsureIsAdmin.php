@@ -15,18 +15,16 @@ class EnsureIsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
+        $user = auth()->user();
+
+        if (!$user) {
             return $next($request);
         }
-        if (auth()->check() && !auth()->user()->hasAnyRole([
-            'admin',
-            'staff_admin',
-            'finance_admin',
-        ])) {
+        if (!$user->hasAnyRole(['admin', 'staff_admin', 'finance_admin'])) {
             auth()->logout();
-
             return redirect()->route('filament.admin.auth.login')->withErrors(['email' => 'Anda tidak memiliki akses ke Admin Panel']);
         }
+
         return $next($request);
     }
 }
