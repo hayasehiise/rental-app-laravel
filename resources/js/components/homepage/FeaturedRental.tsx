@@ -16,7 +16,7 @@ export default function FeaturedRental(props: PropsType) {
                     {/* Card Lapangan */}
                     <div className="card w-96 bg-base-100 shadow-sm">
                         <figure className="relative">
-                            <img src="/assets/field-card.webp" alt="Card figure for card" />
+                            <img src="/assets/field-card.webp" className="h-48 w-full overflow-hidden object-cover" alt="Card figure for card" />
                             <div className="absolute top-2 right-2 badge badge-secondary">
                                 <MdStadium />
                                 Lapangan
@@ -26,7 +26,7 @@ export default function FeaturedRental(props: PropsType) {
                             <div className="card-title">Lapangan Serbaguna</div>
                             <p>Sewa lapangan untuk olahraga, event, atau gathering dengan fasilitas lengkap dan harga bersaing.</p>
                             <div className="card-action">
-                                <Link href={'#'} className="btn flex btn-ghost">
+                                <Link href={route('rental.index', { type: 'lapangan' })} className="btn flex btn-ghost">
                                     More Details <MdArrowOutward className="h-5 w-5" />
                                 </Link>
                             </div>
@@ -35,7 +35,7 @@ export default function FeaturedRental(props: PropsType) {
                     {/* Card Gedung/Ruangan */}
                     <div className="card w-96 bg-base-100 shadow-sm">
                         <figure className="relative">
-                            <img src="/assets/room-card.webp" alt="Card figure for card" />
+                            <img src="/assets/room-card.webp" className="h-52 w-full overflow-hidden object-cover" alt="Card figure for card" />
                             <div className="absolute top-2 right-2 badge badge-secondary">
                                 <FaBuilding />
                                 Gedung
@@ -45,7 +45,7 @@ export default function FeaturedRental(props: PropsType) {
                             <div className="card-title">Gedung & Ruangan Acara</div>
                             <p>Tempat nyaman untuk meeting, seminar, pesta, atau acara keluarga dengan kapasitas fleksibel.</p>
                             <div className="card-action">
-                                <Link href={'#'} className="btn flex btn-ghost">
+                                <Link href={route('rental.index', { type: 'gedung' })} className="btn flex btn-ghost">
                                     More Details <MdArrowOutward className="h-5 w-5" />
                                 </Link>
                             </div>
@@ -54,7 +54,7 @@ export default function FeaturedRental(props: PropsType) {
                     {/* Card Kendaraan */}
                     <div className="card w-96 bg-base-100 shadow-sm">
                         <figure className="relative">
-                            <img src="/assets/car-card.webp" alt="Card figure for card" />
+                            <img src="/assets/car-card.webp" className="h-52 w-full overflow-hidden object-cover" alt="Card figure for card" />
                             <div className="absolute top-2 right-2 badge badge-secondary">
                                 <FaCar />
                                 Kendaraan
@@ -64,7 +64,7 @@ export default function FeaturedRental(props: PropsType) {
                             <div className="card-title">Kendaraan Rental</div>
                             <p>Sewa mobil, bus, atau kendaraan lain untuk perjalanan pribadi maupun grup, cepat dan mudah.</p>
                             <div className="card-action">
-                                <Link href={'#'} className="btn flex btn-ghost">
+                                <Link href={route('rental.index', { type: 'kendaraan' })} className="btn flex btn-ghost">
                                     More Details <MdArrowOutward className="h-5 w-5" />
                                 </Link>
                             </div>

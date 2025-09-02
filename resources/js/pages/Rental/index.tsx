@@ -1,17 +1,14 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Layout from '@/layouts/layout';
-import { formatRupiah } from '@/utils/currency';
-import { usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { gsap } from 'gsap';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 interface RentalUnitImage {
     id: number;
     path: string;
 }
 interface RentalUnit {
     id: number;
-    name: string;
-    price: number;
-    is_available: boolean;
     image: RentalUnitImage[];
 }
 
@@ -23,80 +20,110 @@ interface Rental {
     units: RentalUnit[];
     created_at: string;
 }
-
+interface PaginatedRentals {
+    data: Rental[];
+    current_page: number;
+    last_page: number;
+}
 interface RentalPageProps {
-    rentals: Rental[];
+    rentals: PaginatedRentals;
     type: string | null;
 }
-function RentalUnitCard({ unit }: { unit: RentalUnit }) {
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const imageRef = useRef<HTMLImageElement>(null);
-    useEffect(() => {
-        if (unit.image.length <= 1) return;
-
-        const interval = setInterval(() => {
-            const nextIndex = (currentIndex + 1) % unit.image.length;
-
-            //fade out dulu
-            gsap.to(imageRef.current, {
-                opacity: 0,
-                duration: 0.5,
-                onComplete: () => {
-                    setCurrentIndex(nextIndex);
-                    // fade in setelah ganti index
-                    gsap.fromTo(imageRef.current, { opacity: 0 }, { opacity: 1, duration: 0.5 });
-                },
-            });
-        }, 2000);
-
-        return () => clearInterval(interval);
-    }, [currentIndex, unit.image.length]);
-
-    return (
-        <div className="card w-96 bg-base-100 shadow-xl">
-            <figure className="relative h-48 w-full overflow-hidden">
-                {unit.image.length > 0 ? (
-                    <img
-                        ref={imageRef}
-                        key={unit.image[currentIndex].id}
-                        src={`/storage/${unit.image[currentIndex].path}`}
-                        alt={unit.name}
-                        className="h-48 w-full object-cover"
-                    />
-                ) : (
-                    <div className="flex h-48 w-full items-center justify-center bg-gray-200">No Image</div>
-                )}
-            </figure>
-            <div className="card-body">
-                <h2 className="card-title">{unit.name}</h2>
-                <p className="text-lg font-semibold">{formatRupiah(unit.price)}</p>
-                {/* Badge Status */}
-                <div className="mt-2">
-                    {unit.is_available ? (
-                        <span className="badge badge-success">Tersedia</span>
-                    ) : (
-                        <span className="badge badge-error">Tidak Tersedia</span>
-                    )}
-                </div>
-                <div className="card-action mt-4 justify-end">
-                    <button className="btn btn-primary" disabled={!unit.is_available}>
-                        {unit.is_available ? 'Checkout' : 'Rent Out'}
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-}
 export default function RentalIndex() {
-    const { rentals, type } = usePage<{ props: RentalPageProps }>().props;
+    const { rentals } = usePage<{ props: RentalPageProps }>().props;
+
+    //State lokal untuk meyimpan list yang sudah diload
+    const [item, setItem] = useState<Rental[]>(rentals.data);
+    const [page, setPage] = useState(rentals.current_page);
+    const [lastPage, setLastPage] = useState(rentals.last_page);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        function handleScroll() {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200 && !loading && page < lastPage) {
+                loadMore();
+            }
+        }
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [page, lastPage, loading]);
+
+    function loadMore() {
+        setLoading(true);
+        router.get(
+            route('rental.index'),
+            { page: page + 1 },
+            {
+                preserveScroll: true,
+                preserveState: true,
+                only: ['rentals'],
+                onSuccess: (res) => {
+                    const newRentals = (res.props as any).rentals as PaginatedRentals;
+                    setItem((prev) => [...prev, ...newRentals.data]);
+                    setPage(newRentals.current_page);
+                    setLastPage(newRentals.last_page);
+                },
+                onFinish: () => setLoading(false),
+            },
+        );
+    }
     return (
         <Layout>
             <div className="mt-20 mb-5">
-                <p className="text-4xl">Rental Page</p>
+                <p className="px-10 text-4xl">Our Rental Services</p>
                 <div className="mt-5 grid grid-cols-1 gap-10 px-10 md:grid-cols-2 lg:grid-cols-3">
-                    {rentals.map((rental: Rental) => rental.units.map((unit) => <RentalUnitCard key={unit.id} unit={unit} />))}
+                    {item.map((rental) => (
+                        <RentalCard key={rental.id} rental={rental} />
+                    ))}
                 </div>
+                {loading && <p className="py-4 text-center">...Loading</p>}
+                {page >= lastPage && <p className="py-4 text-center">No More Data</p>}
             </div>
         </Layout>
+    );
+}
+
+function RentalCard({ rental }: { rental: Rental }) {
+    const image = rental.units.flatMap((u) => u.image);
+
+    const [index, setIndex] = useState(0);
+
+    useEffect(() => {
+        if (image.length > 1) {
+            const interval = setInterval(() => {
+                setIndex((prev) => (prev + 1) % image.length);
+            }, 2000);
+            return () => clearInterval(interval);
+        }
+    }, [image.length]);
+
+    useEffect(() => {
+        gsap.fromTo(`.rental-image-${rental.id}`, { opacity: 0.4 }, { opacity: 1, duration: 1, ease: 'power2.inOut' });
+    }, [index, rental.id]);
+
+    return (
+        <div className="card w-96 bg-white shadow-sm">
+            <figure>
+                {image.length > 0 ? (
+                    <img src={`/storage/${image[index].path}`} alt={rental.name} className={`h-64 w-full object-cover rental-image-${rental.id}`} />
+                ) : (
+                    <div className="flex h-64 items-center">
+                        <h2 className="text-3xl text-gray-400">No Image</h2>
+                    </div>
+                )}
+            </figure>
+            <div className="card-body">
+                <h2 className="card-title">
+                    {rental.name}
+                    <div className="badge badge-info">{rental.type}</div>
+                </h2>
+                <p>{rental.description ?? 'Tanpa Deskripsi'}</p>
+                <div className="card-actions justify-end">
+                    <Link href={route('rental.list', rental.id)} className="btn btn-ghost">
+                        More Units
+                    </Link>
+                </div>
+            </div>
+        </div>
     );
 }
