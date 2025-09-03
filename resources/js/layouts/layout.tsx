@@ -1,11 +1,13 @@
-import { Link } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { useEffect, useRef } from 'react';
 
 import { FaCar, FaFacebook, FaGlobe, FaHome, FaInstagramSquare, FaPhone, FaRegBuilding } from 'react-icons/fa';
+import { FiLogIn, FiLogOut } from 'react-icons/fi';
 import { MdOutlineStadium } from 'react-icons/md';
 import { SiHomeassistantcommunitystore } from 'react-icons/si';
 
 export default function Layout({ children }) {
+    const { auth } = usePage<{ auth: { user: any } }>().props;
     // Handle Sub Menu Navbar
     const navbarRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -35,7 +37,7 @@ export default function Layout({ children }) {
                         </Link>
                     </div>
                     <div className="flex-none">
-                        <ul className="menu menu-horizontal pr-10">
+                        <ul className="menu menu-horizontal gap-5 pr-10">
                             <li>
                                 <Link href={'/'}>
                                     <FaHome />
@@ -75,6 +77,19 @@ export default function Layout({ children }) {
                                     <FaPhone />
                                     Contact Us
                                 </Link>
+                            </li>
+                            <li>
+                                {auth?.user ? (
+                                    <button className="btn btn-error" onClick={() => router.post(route('logout'))}>
+                                        <FiLogOut />
+                                        Logout
+                                    </button>
+                                ) : (
+                                    <button className="btn btn-outline" onClick={() => router.get(route('login'))}>
+                                        <FiLogIn />
+                                        Login
+                                    </button>
+                                )}
                             </li>
                         </ul>
                     </div>
