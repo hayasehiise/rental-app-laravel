@@ -19,8 +19,6 @@ return new class extends Migration
             $table->time('booking_time');
             $table->enum('status', ['pending', 'paid', 'cancelled'])->default('pending');
             $table->timestamps();
-
-            $table->unique(['rental_unit_id', 'booking_date', 'booking_time'], 'unique_booking');
         });
     }
 

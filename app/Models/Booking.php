@@ -26,6 +26,6 @@ class Booking extends Model
     }
     public function unit(): BelongsTo
     {
-        return $this->belongsTo(RentalUnit::class);
+        return $this->belongsTo(RentalUnit::class, 'rental_unit_id');
     }
 }

@@ -61,7 +61,7 @@ function UnitCard({ unit }: { unit: RentalUnit }) {
                 </h2>
                 <p>{formatRupiah(unit.price)}</p>
                 <div className="card-actions justify-end">
-                    <Link href={'#'} className="btn btn-outline">
+                    <Link href={route('booking.index', unit.id)} className="btn btn-outline">
                         <FaBookmark />
                         Booking Now
                     </Link>

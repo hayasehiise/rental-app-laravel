@@ -20,7 +20,9 @@ Route::middleware(['auth', 'user'])->group(function () {
     Route::post('/logout', [FrontendAuth::class, 'logout'])->name('logout');
 
     Route::get('/booking/{unitId}', [Booking::class, 'create'])->name('booking.index');
+    Route::get('/booking/{booking}/payment', [Booking::class, 'payment'])->name('booking.payment');
     Route::post('/booking/{unitId}', [Booking::class, 'store'])->name('booking.store');
+    Route::post('/booking/{booking}/cancel', [Booking::class, 'cancel'])->name('booking.cancel');
 });
 
 Route::post('/payment/callback', [Payment::class, 'callback'])->name('payment.callback');

@@ -12,6 +12,7 @@ class Payment extends Controller
     // midtrans server-to-server callback
     public function callback(Request $request)
     {
+        \Log::info('Midtrans callback received', $request->all());
         // supaya mana, re-fetch lagi confignya
         Config::$serverKey = config('midtrans.server_key');
         Config::$isProduction = config('midtrans.is_production');
@@ -27,6 +28,7 @@ class Payment extends Controller
         $payment = ModelsPayment::where('order_id', $orderId)->first();
 
         if (!$payment) {
+            \Log::error('Payment not found for order', ['order_id' => $orderId]);
             return response()->json(['message' => 'Payment not found'], 400);
         }
 
@@ -40,11 +42,17 @@ class Payment extends Controller
 
         // update booking status
         $booking = $payment->booking;
-        if ($transactionStatus === 'captured' || $transactionStatus === 'settlement') {
+        if ($transactionStatus === 'capture' || $transactionStatus === 'settlement') {
             $booking->update(['status' => 'paid']);
         } elseif (in_array($transactionStatus, ['deny', 'cancel', 'expire'])) {
             $booking->update(['status' => 'cancelled']);
         }
+
+        \Log::info('Payment updated', [
+            'order_id' => $orderId,
+            'transaction_status' => $transactionStatus,
+            'booking_status' => $booking->status,
+        ]);
 
         return response()->json(['status' => 'ok']);
     }
