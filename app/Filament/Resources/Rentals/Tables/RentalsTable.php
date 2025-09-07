@@ -38,6 +38,9 @@ class RentalsTable
             ->filters([
                 //
             ])
+            ->recordUrl(fn($record) => RentalUnitResource::getUrl('index', [
+                'rental_id' => $record->id
+            ]))
             ->recordActions([
                 Action::make('manageUnits')
                     ->label('Manage Units')
