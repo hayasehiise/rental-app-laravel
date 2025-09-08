@@ -1,6 +1,6 @@
 import Layout from '@/layouts/layout';
 import { PageProps as InertiaPageProps } from '@inertiajs/core';
-import { usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useEffect, useRef, useState } from 'react';
@@ -39,6 +39,7 @@ export default function TransactionPage() {
     const [currentPage, setCurrentPage] = useState<number>(initialBookings.current_page);
     const [lastPage, setLastPage] = useState<number>(initialBookings.last_page);
     const [loading, setLoading] = useState<boolean>(false);
+    const [colsWidth, setColsWidth] = useState<number[]>([]);
 
     const parentRef = useRef<HTMLDivElement>(null);
 
@@ -66,7 +67,9 @@ export default function TransactionPage() {
         },
         {
             header: 'Total Pembayaran',
-            accessorFn: (row) => row.final_price,
+            cell: ({ row }) => {
+                return <p>Rp {row.original.final_price.toLocaleString('id-ID')}</p>;
+            },
         },
         {
             header: 'Aksi',
@@ -75,7 +78,7 @@ export default function TransactionPage() {
                 return (
                     <div className="flex gap-2">
                         {booking.status === 'pending' && (
-                            <button className="btn btn-sm btn-primary" onClick={() => window.open(route('booking.payment', booking.id))}>
+                            <button className="btn btn-sm btn-primary" onClick={() => router.visit(route('booking.payment', booking.id))}>
                                 Bayar
                             </button>
                         )}
@@ -101,7 +104,8 @@ export default function TransactionPage() {
     const rowVirtualizer = useVirtualizer({
         count: table.getRowModel().rows.length,
         getScrollElement: () => parentRef.current,
-        estimateSize: () => 50,
+        estimateSize: () => 65,
+        measureElement: (el) => el.getBoundingClientRect().height,
         overscan: 5,
     });
 
@@ -132,6 +136,15 @@ export default function TransactionPage() {
         return () => el?.removeEventListener('scroll', handleScroll);
     }, [currentPage, lastPage, loading]);
 
+    // hitung lebar kolom pada header
+    const thRefs = useRef<(HTMLTableCellElement | null)[]>([]);
+    useEffect(() => {
+        if (thRefs.current.length > 0) {
+            const widths = thRefs.current.map((th) => th?.offsetWidth ?? 0);
+            setColsWidth(widths);
+        }
+    }, []);
+
     return (
         <Layout>
             <div className="mt-20 mb-10 px-10">
@@ -141,8 +154,15 @@ export default function TransactionPage() {
                         <thead>
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <tr key={headerGroup.id}>
-                                    {headerGroup.headers.map((header) => (
-                                        <th key={header.id}>{flexRender(header.column.columnDef.header, header.getContext())}</th>
+                                    {headerGroup.headers.map((header, i) => (
+                                        <th
+                                            key={header.id}
+                                            ref={(el) => {
+                                                thRefs.current[i] = el;
+                                            }}
+                                        >
+                                            {flexRender(header.column.columnDef.header, header.getContext())}
+                                        </th>
                                     ))}
                                 </tr>
                             ))}
@@ -154,16 +174,17 @@ export default function TransactionPage() {
                                     <tr
                                         key={row.id}
                                         style={{
-                                            gridTemplateColumns: `repeat(${table.getAllColumns().length}, minmax(0, 1fr))`,
                                             position: 'absolute',
-                                            top: virtualRow.start,
+                                            top: 0,
                                             left: 0,
                                             width: '100%',
                                             transform: `translateY(${virtualRow.start}px)`,
                                         }}
                                     >
-                                        {row.getVisibleCells().map((cell) => (
-                                            <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+                                        {row.getVisibleCells().map((cell, i) => (
+                                            <td key={cell.id} style={{ width: colsWidth[i] }}>
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </td>
                                         ))}
                                     </tr>
                                 );

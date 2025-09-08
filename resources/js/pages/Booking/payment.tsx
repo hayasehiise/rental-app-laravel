@@ -56,19 +56,19 @@ export default function PaymentPage() {
     const handlePay = () => {
         if (!window.snap) return;
         window.snap.pay(snapToken, {
-            onSuccess: (result: any) => {
-                window.location.href = route('rental.index'); // nanti ganti jadi page transaksi
+            onSuccess: (result: unknown) => {
+                window.location.href = route('transaction.index'); // nanti ganti jadi page transaksi
             },
-            onPending: (result: any) => {
-                window.location.href = route('rental.index');
+            onPending: (result: unknown) => {
+                window.location.href = route('transaction.index');
             },
-            onError: (result: any) => {
+            onError: (result: unknown) => {
                 alert('Pembayaran Gagal. Coba Lagi');
-                window.location.href = route('rental.index');
+                window.location.href = route('transaction.index');
             },
-            onClose: (result: any) => {
+            onClose: (result: unknown) => {
                 alert('Pembayaran Ditutup. Silahkan selesaikan pembayaran anda');
-                window.location.href = route('rental.index');
+                window.location.href = route('transaction.index');
             },
         });
     };
