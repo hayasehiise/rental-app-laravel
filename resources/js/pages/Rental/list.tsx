@@ -3,8 +3,9 @@ import Layout from '@/layouts/layout';
 import { formatRupiah } from '@/utils/currency';
 import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { Link, router, usePage } from '@inertiajs/react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { gsap } from 'gsap';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FaBookmark, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 interface RentalUnitImage {
@@ -79,17 +80,33 @@ export default function ListUnitRental() {
     const [lastPage, setLastPage] = useState(units.last_page);
     const [loading, setLoading] = useState(false);
 
+    // untuk infinite scroll
+    const parentRef = useRef<HTMLDivElement>(null);
+    const [columns, setColumns] = useState<number>(3);
+
+    // hitung jumlah kolom berdasarkan lebar container
     useEffect(() => {
-        function handleScroll() {
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200 && !loading && page < lastPage) {
-                loadMore();
-            }
-        }
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [page, lastPage, loading]);
+        const resizeObserver = new ResizeObserver((entries) => {
+            const width = entries[0].contentRect.width;
+            if (width < 640) setColumns(1);
+            else if (width < 1024) setColumns(2);
+            else setColumns(3);
+        });
+        if (parentRef.current) resizeObserver.observe(parentRef.current);
+        return () => resizeObserver.disconnect();
+    }, []);
+
+    const rows = Math.ceil(item.length / columns);
+
+    const rowVisualizer = useVirtualizer({
+        count: rows,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 450,
+        overscan: 3,
+    });
 
     function loadMore() {
+        if (loading || page >= lastPage) return;
         setLoading(true);
         router.get(
             route('rental.list', { id: rental.id }),
@@ -97,6 +114,7 @@ export default function ListUnitRental() {
             {
                 preserveScroll: true,
                 preserveState: true,
+                replace: true,
                 only: ['units'],
                 onSuccess: (res) => {
                     const newUnits = (res.props as any).units as PaginatedProps;
@@ -108,17 +126,57 @@ export default function ListUnitRental() {
             },
         );
     }
+
+    // infinite scroll
+    useEffect(() => {
+        const parent = parentRef.current;
+        if (!parent) return;
+        const onScroll = () => {
+            if (parent.scrollHeight - parent.scrollTop - parent.clientHeight < 200) {
+                loadMore();
+            }
+        };
+        parent.addEventListener('scroll', onScroll);
+        return () => parent.removeEventListener('scroll', onScroll);
+    }, [page, lastPage, loading]);
+
     return (
         <Layout>
             <div className="mt-20 mb-5">
-                <p className="px-24 text-3xl font-extrabold">Rental Unit List</p>
-                <div className="mt-5 grid grid-cols-1 gap-10 px-24 md:grid-cols-2 lg:grid-cols-3">
+                <p className="mb-5 px-24 text-3xl font-extrabold">Rental Unit List</p>
+                <div ref={parentRef} className="relative mx-auto h-[80vh] overflow-auto">
+                    {rowVisualizer.getVirtualItems().map((virtualRow) => {
+                        const start = virtualRow.index * columns;
+                        const end = Math.min(start + columns, item.length);
+                        const rowItems = item.slice(start, end);
+                        return (
+                            <div
+                                key={virtualRow.index}
+                                style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    width: '100%',
+                                    transform: `translateY(${virtualRow.start}px)`,
+                                    display: 'flex',
+                                }}
+                            >
+                                {rowItems.map((unit) => (
+                                    <div key={unit.id} className="flex w-full justify-center">
+                                        <UnitCard key={unit.id} unit={unit} />
+                                    </div>
+                                ))}
+                            </div>
+                        );
+                    })}
+                </div>
+                {/* <div className="mt-5 grid grid-cols-1 gap-10 px-24 md:grid-cols-2 lg:grid-cols-3">
                     {item.map((unit) => (
                         <UnitCard key={unit.id} unit={unit} />
                     ))}
                 </div>
                 {loading && <p className="py-4 text-center">...Loading</p>}
-                {page >= lastPage && <p className="py-4 text-center">No More Units</p>}
+                {page >= lastPage && <p className="py-4 text-center">No More Units</p>} */}
             </div>
         </Layout>
     );

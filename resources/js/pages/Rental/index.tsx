@@ -2,8 +2,9 @@
 import Layout from '@/layouts/layout';
 import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { Link, router, usePage } from '@inertiajs/react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { gsap } from 'gsap';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 interface RentalUnitImage {
     id: number;
     path: string;
@@ -39,17 +40,33 @@ export default function RentalIndex() {
     const [lastPage, setLastPage] = useState(rentals.last_page);
     const [loading, setLoading] = useState(false);
 
+    // untuk infinite scroll
+    const parentRef = useRef<HTMLDivElement>(null);
+    const [columns, setColumns] = useState<number>(3);
+
+    // Hitung jumlah kolom berdasarkan lebar container
     useEffect(() => {
-        function handleScroll() {
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200 && !loading && page < lastPage) {
-                loadMore();
-            }
-        }
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [page, lastPage, loading]);
+        const resizeObserver = new ResizeObserver((entries) => {
+            const width = entries[0].contentRect.width;
+            if (width < 640) setColumns(1);
+            else if (width < 1024) setColumns(2);
+            else setColumns(3);
+        });
+        if (parentRef.current) resizeObserver.observe(parentRef.current);
+        return () => resizeObserver.disconnect();
+    }, []);
+
+    const rows = Math.ceil(item.length / columns);
+
+    const rowVirtualizer = useVirtualizer({
+        count: rows,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 560,
+        overscan: 12,
+    });
 
     function loadMore() {
+        if (loading || page >= lastPage) return;
         setLoading(true);
         router.get(
             route('rental.index'),
@@ -57,6 +74,7 @@ export default function RentalIndex() {
             {
                 preserveScroll: true,
                 preserveState: true,
+                replace: true,
                 only: ['rentals'],
                 onSuccess: (res) => {
                     const newRentals = (res.props as any).rentals as PaginatedRentals;
@@ -68,17 +86,54 @@ export default function RentalIndex() {
             },
         );
     }
+
+    // infinite scroll
+    useEffect(() => {
+        const parent = parentRef.current;
+        if (!parent) return;
+        const onScroll = () => {
+            if (parent.scrollHeight - parent.scrollTop - parent.clientHeight < 200) {
+                loadMore();
+            }
+        };
+        parent.addEventListener('scroll', onScroll);
+        return () => parent.removeEventListener('scroll', onScroll);
+    }, [page, lastPage, loading]);
+
     return (
         <Layout>
             <div className="mt-20 mb-5">
-                <p className="px-10 text-4xl">Our Rental Services</p>
-                <div className="mt-5 grid grid-cols-1 gap-10 px-10 md:grid-cols-2 lg:grid-cols-3">
-                    {item.map((rental) => (
-                        <RentalCard key={rental.id} rental={rental} />
-                    ))}
+                <p className="mb-5 px-10 text-4xl">Our Rental Services</p>
+                <div ref={parentRef} className="relative mx-auto h-[80vh] overflow-auto">
+                    <div style={{ height: rowVirtualizer.getTotalSize(), position: 'absolute', width: '100%' }}>
+                        {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                            const start = virtualRow.index * columns;
+                            const end = Math.min(start + columns, item.length);
+                            const rowItems = item.slice(start, end);
+                            return (
+                                <div
+                                    key={virtualRow.index}
+                                    style={{
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        width: '100%',
+                                        transform: `translateY(${virtualRow.start}px)`,
+                                        display: 'flex',
+                                    }}
+                                >
+                                    {rowItems.map((rental) => (
+                                        <div key={rental.id} className="flex w-full justify-center">
+                                            <RentalCard rental={rental} />
+                                        </div>
+                                    ))}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    {loading && <p className="py-2 text-center">...Loading</p>}
+                    {page >= lastPage && <p className="py-2 text-center">No More Data</p>}
                 </div>
-                {loading && <p className="py-4 text-center">...Loading</p>}
-                {page >= lastPage && <p className="py-4 text-center">No More Data</p>}
             </div>
         </Layout>
     );
