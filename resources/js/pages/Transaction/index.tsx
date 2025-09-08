@@ -147,15 +147,16 @@ export default function TransactionPage() {
                                 </tr>
                             ))}
                         </thead>
-                        <tbody>
+                        <tbody className="relative w-full">
                             {rowVirtualizer.getVirtualItems().map((virtualRow) => {
                                 const row = table.getRowModel().rows[virtualRow.index];
                                 return (
                                     <tr
                                         key={row.id}
                                         style={{
+                                            gridTemplateColumns: `repeat(${table.getAllColumns().length}, minmax(0, 1fr))`,
                                             position: 'absolute',
-                                            top: 0,
+                                            top: virtualRow.start,
                                             left: 0,
                                             width: '100%',
                                             transform: `translateY(${virtualRow.start}px)`,
