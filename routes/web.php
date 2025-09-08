@@ -5,6 +5,7 @@ use App\Http\Controllers\Booking;
 use App\Http\Controllers\Homepage;
 use App\Http\Controllers\Payment;
 use App\Http\Controllers\Rental;
+use App\Http\Controllers\Transaction;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [Homepage::class, 'index'])->name('home');
@@ -23,6 +24,8 @@ Route::middleware(['auth', 'user'])->group(function () {
     Route::get('/booking/{booking}/payment', [Booking::class, 'payment'])->name('booking.payment');
     Route::post('/booking/{unitId}', [Booking::class, 'store'])->name('booking.store');
     Route::post('/booking/{booking}/cancel', [Booking::class, 'cancel'])->name('booking.cancel');
+
+    Route::get('/transaction', [Transaction::class, 'index'])->name('transaction.index');
 });
 
 Route::post('/payment/callback', [Payment::class, 'callback'])->name('payment.callback');

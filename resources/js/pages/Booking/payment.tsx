@@ -1,4 +1,5 @@
 import Layout from '@/layouts/layout';
+import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { router, usePage } from '@inertiajs/react';
 import { useEffect } from 'react';
 
@@ -7,8 +8,36 @@ declare global {
         snap: any;
     }
 }
+
+interface Unit {
+    id: number;
+    name: string;
+    price: number;
+}
+interface Payment {
+    id: number;
+    booking_id: number;
+    order_id: string;
+    transaction_status: string;
+}
+interface Booking {
+    id: number;
+    user_id: number;
+    rental_unit_id: number;
+    start_time: string;
+    end_time: string;
+    price: number;
+    discount: number;
+    final_price: number;
+    unit: Unit;
+    payment: Payment;
+}
+interface PageProps extends InertiaPageProps {
+    snapToken: string;
+    booking: Booking;
+}
 export default function PaymentPage() {
-    const { snapToken, booking, unit } = usePage().props;
+    const { snapToken, booking } = usePage<PageProps>().props;
 
     useEffect(() => {
         const script = document.createElement('script');
@@ -38,7 +67,7 @@ export default function PaymentPage() {
                 window.location.href = route('rental.index');
             },
             onClose: (result: any) => {
-                alert('Pembayaran DItutup. Silahkan selesaikan pembayaran anda');
+                alert('Pembayaran Ditutup. Silahkan selesaikan pembayaran anda');
                 window.location.href = route('rental.index');
             },
         });
@@ -48,11 +77,29 @@ export default function PaymentPage() {
             <div className="flex h-dvh w-full items-center justify-center">
                 <div className="w-2xl p-8">
                     <h1 className="mb-2 text-xl font-bold">Pembayaran Booking</h1>
-                    <p>Unit: {unit.name}</p>
-                    <p>Tanggal: {booking.booking_date}</p>
-                    <p>Jam: {booking.booking_time}</p>
-                    <p>Jumlah: Rp {Number(unit.price).toLocaleString('id-ID')}</p>
-                    <div className="mt-4 flex">
+                    <div className="space-y-4">
+                        <p>
+                            <span className="font-semibold">Unit : </span>
+                            {booking.unit.name}
+                        </p>
+                        <p>
+                            <span className="font-semibold">Waktu Mulai : </span>
+                            {new Date(booking.start_time).toLocaleString('id-ID')}
+                        </p>
+                        <p>
+                            <span className="font-semibold">Waktu Mulai : </span>
+                            {new Date(booking.end_time).toLocaleString('id-ID')}
+                        </p>
+                        <p>
+                            <span className="font-semibold">Diskon : </span>
+                            {Number(booking.discount)}%
+                        </p>
+                        <p>
+                            <span className="font-semibold">Total Harga : </span>
+                            Rp {Number(booking.final_price).toLocaleString()}
+                        </p>
+                    </div>
+                    <div className="mt-4 flex gap-3">
                         <button onClick={handlePay} className="btn btn-primary">
                             Bayar Sekarang
                         </button>
