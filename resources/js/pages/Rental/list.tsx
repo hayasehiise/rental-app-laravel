@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import Layout from '@/layouts/layout';
 import { formatRupiah } from '@/utils/currency';
+import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { Link, router, usePage } from '@inertiajs/react';
 import { gsap } from 'gsap';
 import { useEffect, useState } from 'react';
@@ -22,7 +23,7 @@ interface PaginatedProps {
     current_page: number;
     last_page: number;
 }
-interface RentalUnitList {
+interface PageProps extends InertiaPageProps {
     rental: {
         id: number;
     };
@@ -71,7 +72,7 @@ function UnitCard({ unit }: { unit: RentalUnit }) {
     );
 }
 export default function ListUnitRental() {
-    const { rental, units } = usePage<{ props: RentalUnitList }>().props;
+    const { rental, units } = usePage<PageProps>().props;
 
     const [item, setItem] = useState<RentalUnit[]>(units.data);
     const [page, setPage] = useState(units.current_page);

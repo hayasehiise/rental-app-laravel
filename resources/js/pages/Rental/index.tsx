@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import Layout from '@/layouts/layout';
+import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { Link, router, usePage } from '@inertiajs/react';
 import { gsap } from 'gsap';
 import { useEffect, useState } from 'react';
@@ -25,12 +26,12 @@ interface PaginatedRentals {
     current_page: number;
     last_page: number;
 }
-interface RentalPageProps {
+interface PageProps extends InertiaPageProps {
     rentals: PaginatedRentals;
     type: string | null;
 }
 export default function RentalIndex() {
-    const { rentals } = usePage<{ props: RentalPageProps }>().props;
+    const { rentals } = usePage<PageProps>().props;
 
     //State lokal untuk meyimpan list yang sudah diload
     const [item, setItem] = useState<Rental[]>(rentals.data);
