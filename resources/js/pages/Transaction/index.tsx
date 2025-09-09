@@ -83,7 +83,7 @@ export default function TransactionPage() {
                             </button>
                         )}
                         {booking.status === 'paid' && (
-                            <button className="btn btn-outline btn-sm" onClick={() => window.open(route('rental.index'))}>
+                            <button className="btn btn-outline btn-sm" onClick={() => window.open(route('invoice.download', booking.id))}>
                                 Cetak
                             </button>
                         )}

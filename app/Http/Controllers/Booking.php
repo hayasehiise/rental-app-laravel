@@ -126,7 +126,7 @@ class Booking extends Controller
             ]);
         }
 
-        return redirect()->route('rental.index')->with('success', 'Booking Dibatalkan');
+        return redirect()->route('transaction.index')->with('success', 'Booking Dibatalkan');
     }
 
     public function payment(ModelsBooking $booking)

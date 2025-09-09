@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\FrontendAuth;
 use App\Http\Controllers\Booking;
 use App\Http\Controllers\Homepage;
+use App\Http\Controllers\Invoice;
 use App\Http\Controllers\Payment;
 use App\Http\Controllers\Rental;
 use App\Http\Controllers\Transaction;
@@ -26,6 +27,8 @@ Route::middleware(['auth', 'user'])->group(function () {
     Route::post('/booking/{booking}/cancel', [Booking::class, 'cancel'])->name('booking.cancel');
 
     Route::get('/transaction', [Transaction::class, 'index'])->name('transaction.index');
+
+    Route::get('/invoice/{booking}', [Invoice::class, 'download'])->name('invoice.download');
 });
 
 Route::post('/payment/callback', [Payment::class, 'callback'])->name('payment.callback');

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Layout from '@/layouts/layout';
 import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { router, usePage } from '@inertiajs/react';
@@ -72,6 +74,8 @@ export default function PaymentPage() {
             },
         });
     };
+
+    // untuk modal
     return (
         <Layout>
             <div className="flex h-dvh w-full items-center justify-center">
@@ -103,9 +107,27 @@ export default function PaymentPage() {
                         <button onClick={handlePay} className="btn btn-primary">
                             Bayar Sekarang
                         </button>
-                        <button onClick={() => router.post(route('booking.cancel', booking.id))} className="btn btn-outline">
-                            Cancel
-                        </button>
+                        {/* The button to open modal */}
+                        <label htmlFor="cancel_modal" className="btn btn-outline btn-error">
+                            Batalkan
+                        </label>
+
+                        {/* Put this part before </body> tag */}
+                        <input type="checkbox" id="cancel_modal" className="modal-toggle" />
+                        <div className="modal" role="dialog">
+                            <div className="modal-box">
+                                <h3 className="text-lg font-bold">Cancel Payment</h3>
+                                <p className="py-4">Apakah Anda Yakin Membatalkan Pembayaran?</p>
+                                <div className="modal-action">
+                                    <button className="btn btn-error" onClick={() => router.post(route('booking.cancel', booking.id))}>
+                                        Yes
+                                    </button>
+                                    <label htmlFor="cancel_modal" className="btn">
+                                        Cancel
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
