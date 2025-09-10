@@ -9,3 +9,4 @@ use Illuminate\Support\Facades\Schedule;
 // })->purpose('Display an inspiring quote');
 
 Schedule::command('bookings:cancel-expired')->everyMinute();
+Schedule::command('users:cleanup-expired')->hourly();

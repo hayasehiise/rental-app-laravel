@@ -70,7 +70,7 @@ export default function LoginPage() {
 
                     <div className="mt-4 flex justify-center gap-5">
                         <button className="btn btn-neutral">{processing ? 'Logging In' : 'Login'}</button>
-                        <Link href={'#'} className="btn btn-outline">
+                        <Link href={route('register.user')} className="btn btn-outline">
                             Register
                         </Link>
                     </div>

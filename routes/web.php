@@ -16,6 +16,9 @@ Route::get('/rental/{id}', [Rental::class, 'list'])->name('rental.list');
 Route::middleware('guest')->group(function () {
     Route::get('/login', [FrontendAuth::class, 'showLogin'])->name('login.user');
     Route::post('/login', [FrontendAuth::class, 'login']);
+
+    Route::get('/register', [FrontendAuth::class, 'showRegister'])->name('register.user');
+    Route::post('/register', [FrontendAuth::class, 'register'])->name('register.store');
 });
 
 Route::middleware(['isUser'])->group(function () {
@@ -32,3 +35,5 @@ Route::middleware(['isUser'])->group(function () {
 });
 
 Route::post('/payment/callback', [Payment::class, 'callback'])->name('payment.callback');
+
+Route::get('/register/verify/{token}', [FrontendAuth::class, 'verify'])->name('register.verify');

@@ -18,6 +18,10 @@ class VerifyUser extends Model
         'verification_expire_at'
     ];
 
+    protected $casts = [
+        'verification_expire_at' => 'datetime',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
