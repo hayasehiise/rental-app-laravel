@@ -21,6 +21,14 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        Schema::create('verified_user', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->boolean('verified_status')->default(false);
+            $table->string('verification_token', 100)->nullable()->unique();
+            $table->timestamp('verification_expire_at')->nullable();
+        });
+
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');

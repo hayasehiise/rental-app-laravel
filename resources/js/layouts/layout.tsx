@@ -80,12 +80,12 @@ export default function Layout({ children }) {
                             </li>
                             <li>
                                 {auth?.user ? (
-                                    <button className="btn btn-error" onClick={() => router.post(route('logout'))}>
+                                    <button className="btn btn-error" onClick={() => router.post(route('logout.user'))}>
                                         <FiLogOut />
                                         Logout
                                     </button>
                                 ) : (
-                                    <button className="btn btn-outline" onClick={() => router.get(route('login'))}>
+                                    <button className="btn btn-outline" onClick={() => router.get(route('login.user'))}>
                                         <FiLogIn />
                                         Login
                                     </button>

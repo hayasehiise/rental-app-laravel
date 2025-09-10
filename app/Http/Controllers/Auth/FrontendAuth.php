@@ -22,6 +22,20 @@ class FrontendAuth extends Controller
         ]);
 
         if (Auth::attempt($validated)) {
+            $user = Auth::user();
+
+            if (!$user->hasAnyRole(['member', 'guest'])) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Akun bukan untuk user login'
+                ]);
+            } else if (!$user->verify->verified_status) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Akun belum terverifikasi'
+                ]);
+            }
+
             $request->session()->regenerate();
             return redirect()->intended('/');
         }

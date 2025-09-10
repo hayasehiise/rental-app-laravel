@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsureIsUser
@@ -15,15 +16,15 @@ class EnsureIsUser
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
-            return redirect()->route('login')->withErrors(['auth' => 'Anda Harus Login untuk Melanjutkan']);
-        }
-
-        if (!auth()->user()->hasAnyRole(['guest', 'member'])) {
+        $user = auth()->user();
+        if (!$user) {
+            return redirect()->route('login.user')->withErrors(['auth' => 'Anda Harus Login untuk Melanjutkan']);
+        } else if ($user && !$user->hasAnyRole(['member', 'guest'])) {
             auth()->logout();
-
-            return redirect()->route('login')->withErrors(['auth' => 'Role Anda tidak diizinkan mengakses area user']);
+            session()->flush();
+            return redirect()->route('login.user')->withErrors(['auth' => 'Role Anda tidak diizinkan mengakses area user']);
         }
+
         return $next($request);
     }
 }

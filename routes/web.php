@@ -14,12 +14,12 @@ Route::get('/rental', [Rental::class, 'index'])->name('rental.index');
 Route::get('/rental/{id}', [Rental::class, 'list'])->name('rental.list');
 
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [FrontendAuth::class, 'showLogin'])->name('login');
+    Route::get('/login', [FrontendAuth::class, 'showLogin'])->name('login.user');
     Route::post('/login', [FrontendAuth::class, 'login']);
 });
 
-Route::middleware(['auth', 'user'])->group(function () {
-    Route::post('/logout', [FrontendAuth::class, 'logout'])->name('logout');
+Route::middleware(['isUser'])->group(function () {
+    Route::post('/logout', [FrontendAuth::class, 'logout'])->name('logout.user');
 
     Route::get('/booking/{unitId}', [Booking::class, 'create'])->name('booking.index');
     Route::get('/booking/{booking}/payment', [Booking::class, 'payment'])->name('booking.payment');

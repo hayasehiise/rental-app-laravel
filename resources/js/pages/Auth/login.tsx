@@ -16,7 +16,7 @@ export default function LoginPage() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('login'));
+        post(route('login.user'));
     };
 
     // Validasi field tertentu saat blur
