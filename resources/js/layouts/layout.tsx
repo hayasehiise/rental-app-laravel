@@ -2,10 +2,22 @@ import { Link, router, usePage } from '@inertiajs/react';
 import { useEffect, useRef } from 'react';
 
 import { FaCar, FaFacebook, FaGlobe, FaHome, FaInstagramSquare, FaPhone, FaRegBuilding } from 'react-icons/fa';
-import { FiLogIn, FiLogOut } from 'react-icons/fi';
+import { FiLogIn } from 'react-icons/fi';
 import { MdOutlineStadium } from 'react-icons/md';
 import { SiHomeassistantcommunitystore } from 'react-icons/si';
 
+function getInitial(name: string) {
+    if (!name) return '';
+
+    const parts = name.trim().split(' ');
+
+    const initials = parts
+        .slice(0, 2)
+        .map((part) => part.charAt(0).toUpperCase())
+        .join('');
+
+    return initials;
+}
 export default function Layout({ children }) {
     const { auth } = usePage<{ auth: { user: any } }>().props;
     // Handle Sub Menu Navbar
@@ -30,7 +42,7 @@ export default function Layout({ children }) {
     return (
         <main>
             <header>
-                <div className="fixed top-0 z-[49] navbar bg-base-100 shadow-sm" ref={navbarRef}>
+                <div className="fixed top-0 z-[49] navbar h-5 bg-base-100 shadow-sm" ref={navbarRef}>
                     <div className="flex-1">
                         <Link href={'/'} className="btn btn-ghost">
                             Rental App
@@ -78,19 +90,34 @@ export default function Layout({ children }) {
                                     Contact Us
                                 </Link>
                             </li>
-                            <li>
-                                {auth?.user ? (
-                                    <button className="btn btn-error" onClick={() => router.post(route('logout.user'))}>
-                                        <FiLogOut />
-                                        Logout
-                                    </button>
-                                ) : (
-                                    <button className="btn btn-outline" onClick={() => router.get(route('login.user'))}>
-                                        <FiLogIn />
-                                        Login
-                                    </button>
-                                )}
-                            </li>
+                            {auth?.user ? (
+                                // <button className="btn btn-error" onClick={() => router.post(route('logout.user'))}>
+                                //     <FiLogOut />
+                                //     Logout
+                                // </button>
+                                <div className="dropdown dropdown-end">
+                                    <div tabIndex={0} role="button" className="btn avatar avatar-placeholder btn-circle btn-ghost">
+                                        <div className="w-10 rounded-full bg-neutral text-neutral-content">
+                                            <span>{getInitial(auth.user.name)}</span>
+                                        </div>
+                                    </div>
+                                    <ul tabIndex={0} className="dropdown-content menu z-1 mt-3 w-52 menu-sm rounded-box bg-base-100 p-2 shadow">
+                                        <li>
+                                            <Link href={route('transaction.index')}>Transaction</Link>
+                                        </li>
+                                        <li>
+                                            <a onClick={() => router.post(route('logout.user'))} className="hover:bg-red-500">
+                                                Logout
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            ) : (
+                                <button className="btn btn-outline" onClick={() => router.get(route('login.user'))}>
+                                    <FiLogIn />
+                                    Login
+                                </button>
+                            )}
                         </ul>
                     </div>
                 </div>
