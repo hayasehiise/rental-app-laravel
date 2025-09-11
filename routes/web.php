@@ -30,9 +30,9 @@ Route::middleware(['isUser'])->group(function () {
     Route::post('/booking/{booking}/cancel', [Booking::class, 'cancel'])->name('booking.cancel');
 
     Route::get('/transaction', [Transaction::class, 'index'])->name('transaction.index');
-
-    Route::get('/invoice/{booking}', [Invoice::class, 'download'])->name('invoice.download');
 });
+
+Route::get('/invoice/{booking}', [Invoice::class, 'download'])->middleware(['auth'])->name('invoice.download');
 
 Route::post('/payment/callback', [Payment::class, 'callback'])->name('payment.callback');
 

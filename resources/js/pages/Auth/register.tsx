@@ -1,5 +1,14 @@
-import { useForm, usePage } from '@inertiajs/react';
+import { Link, useForm, usePage } from '@inertiajs/react';
+import { useState } from 'react';
+import { IoKey, IoKeyOutline, IoMailOutline, IoPersonOutline } from 'react-icons/io5';
+import { z } from 'zod';
 
+interface RegisterError {
+    name?: string;
+    email?: string;
+    password?: string;
+    password_confirmation?: string;
+}
 export default function RegisterPage() {
     const { flash } = usePage().props;
     const { data, setData, post, processing, errors } = useForm({
@@ -8,58 +17,140 @@ export default function RegisterPage() {
         password: '',
         password_confirmation: '',
     });
+    const [clientError, setClientError] = useState<RegisterError>({});
+    const registerSchema = z
+        .object({
+            name: z.string().min(1, 'Dimohon untuk memasukan nama anda'),
+            email: z.email('Masukan alamat email yang benar'),
+            password: z.string().min(6, 'Masukan minimal 6 karakter'),
+            password_confirmation: z.string().min(6, 'Konfirmasi Password Harus Sama'),
+        })
+        .refine((data) => data.password === data.password_confirmation, {
+            error: 'Password Tidak Sama',
+            path: ['password', 'password_confirmation'],
+        });
 
-    const submit = (e) => {
+    const validateField = (field: keyof typeof data) => {
+        const fieldSchema = registerSchema.pick({ [field]: true });
+        const result = fieldSchema.safeParse({ [field]: data[field] });
+        if (!result.success) {
+            setClientError((prev) => ({ ...prev, [field]: result.error.flatten().fieldErrors[field]?.[0] || '' }));
+        } else {
+            setClientError((prev) => {
+                const newError = { ...prev };
+                delete newError[field];
+                return newError;
+            });
+        }
+    };
+
+    const submit = (e: React.FormEvent) => {
         e.preventDefault();
+        const result = registerSchema.safeParse(data);
+
+        if (!result.success) {
+            const formatedError = result.error?.flatten().fieldErrors;
+            const errorsObj: Record<string, string> = {};
+
+            Object.entries(formatedError).forEach(([key, value]) => {
+                if (value && value.length > 0) {
+                    errorsObj[key] = value[0];
+                }
+            });
+
+            setClientError(errorsObj);
+            return;
+        }
+        setClientError({});
         post(route('register.store'));
     };
 
     return (
-        <div className="mx-auto mt-20 max-w-md rounded bg-white p-6 shadow">
-            <h1 className="mb-6 text-2xl font-bold">Register</h1>
-
-            {flash?.success && <div className="mb-4 rounded bg-green-100 p-3 text-green-800">{flash.success}</div>}
-
-            {errors && Object.keys(errors).length > 0 && (
-                <div className="mb-4 text-red-600">
-                    {Object.values(errors).map((err, i) => (
-                        <p key={i}>{err}</p>
-                    ))}
-                </div>
-            )}
-
+        <div className="mt-20 flex max-w-full justify-center p-6">
             <form onSubmit={submit} className="space-y-4">
-                <input
-                    placeholder="Name"
-                    type="text"
-                    value={data.name}
-                    onChange={(e) => setData('name', e.target.value)}
-                    className="w-full rounded border px-3 py-2"
-                />
-                <input
-                    placeholder="Email"
-                    type="email"
-                    value={data.email}
-                    onChange={(e) => setData('email', e.target.value)}
-                    className="w-full rounded border px-3 py-2"
-                />
-                <input
-                    placeholder="Password"
-                    type="password"
-                    value={data.password}
-                    onChange={(e) => setData('password', e.target.value)}
-                    className="w-full rounded border px-3 py-2"
-                />
-                <input
-                    placeholder="Confirm Password"
-                    type="password"
-                    value={data.password_confirmation}
-                    onChange={(e) => setData('password_confirmation', e.target.value)}
-                    className="w-full rounded border px-3 py-2"
-                />
-                <button type="submit" disabled={processing} className="w-full rounded bg-blue-500 py-2 text-white hover:bg-blue-600">
-                    {processing ? 'Registering...' : 'Register'}
-                </button>
+                <fieldset className="fieldset w-sm rounded-box border border-base-300 bg-base-200 p-4">
+                    <legend className="fieldset-legend text-2xl">Register Account</legend>
+
+                    {flash?.success && <div className="mb-4 rounded bg-green-100 p-3 text-green-800">{flash.success}</div>}
+                    {/* Client-side errors */}
+                    {Object.keys(clientError).length > 0 && (
+                        <div className="mb-4 text-red-600">
+                            {Object.values(clientError).map((err, i) => (
+                                <p key={i}>{err}</p>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Server-side errors */}
+                    {errors && Object.keys(errors).length > 0 && (
+                        <div className="mb-4 text-red-600">
+                            {Object.values(errors).map((err, i) => (
+                                <p key={i}>{err}</p>
+                            ))}
+                        </div>
+                    )}
+
+                    <label className="fieldset-label">Nama Lengkap</label>
+                    <label className={`input w-full ${clientError.name && 'input-error'}`}>
+                        <IoPersonOutline className="h-[1em] opacity-50" />
+                        <input
+                            type="text"
+                            value={data.name}
+                            onChange={(e) => setData('name', e.target.value)}
+                            onBlur={() => validateField('name')}
+                            className=""
+                        />
+                    </label>
+                    {clientError.name && <div className="px-3 text-red-400">{clientError.name}</div>}
+
+                    <label className="fieldset-label">Email</label>
+                    <label className={`input w-full ${clientError.email && 'input-error'}`}>
+                        <IoMailOutline className="h-[1em] opacity-50" />
+                        <input
+                            type="email"
+                            value={data.email}
+                            onChange={(e) => setData('email', e.target.value)}
+                            onBlur={() => validateField('email')}
+                            className=""
+                        />
+                    </label>
+                    {clientError.email && <div className="px-3 text-red-400">{clientError.email}</div>}
+
+                    <label className="fieldset-label">Password</label>
+                    <label className={`input w-full ${clientError.password && 'input-error'}`}>
+                        <IoKeyOutline className="h-[1em] opacity-50" />
+                        <input
+                            type="password"
+                            value={data.password}
+                            onChange={(e) => setData('password', e.target.value)}
+                            onBlur={() => validateField('password')}
+                            className=""
+                        />
+                    </label>
+                    {clientError.password && <div className="px-3 text-red-400">{clientError.password}</div>}
+
+                    <label className="fieldset-label">Confirm Password</label>
+                    <label className={`input w-full ${clientError.password_confirmation && 'input-error'}`}>
+                        <IoKey className="h-[1em] opacity-50" />
+                        <input
+                            type="password"
+                            value={data.password_confirmation}
+                            onChange={(e) => setData('password_confirmation', e.target.value)}
+                            onBlur={() => validateField('password_confirmation')}
+                            className=""
+                        />
+                    </label>
+                    {clientError.password_confirmation && <div className="px-3 text-red-400">{clientError.password_confirmation}</div>}
+
+                    <div className="mt-4 flex justify-center gap-5">
+                        <button disabled={processing} className="btn btn-primary">
+                            {processing ? 'Registering...' : 'Register'}
+                        </button>
+                        <Link className="btn btn-outline" href={route('login.user')}>
+                            Cancel
+                        </Link>
+                    </div>
+                </fieldset>
             </form>
         </div>
     );
