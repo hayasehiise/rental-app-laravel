@@ -1,4 +1,5 @@
 import { Link } from '@inertiajs/react';
+import { forwardRef } from 'react';
 
 import { FaBuilding, FaCar } from 'react-icons/fa';
 import { MdArrowOutward, MdStadium } from 'react-icons/md';
@@ -6,15 +7,14 @@ import { MdArrowOutward, MdStadium } from 'react-icons/md';
 interface PropsType {
     totalUnit: number;
 }
-export default function FeaturedRental(props: PropsType) {
-    const { totalUnit } = props;
+const FeaturedRental = forwardRef<HTMLDivElement, PropsType>(({ totalUnit }, ref) => {
     return (
-        <div className="min-h-[80dvh]">
+        <div ref={ref} className="min-h-[100dvh] lg:min-h-[80dvh]">
             <div className="flex flex-col">
-                <p className="my-5 px-36 text-4xl font-bold">Our Rental List</p>
-                <div className="flex items-center justify-center gap-10">
+                <p className="my-5 px-12 text-4xl font-bold lg:px-36">Our Rental List</p>
+                <div className="flex flex-col items-center justify-center gap-10 px-0 md:flex-row md:px-5 lg:flex-row lg:px-0">
                     {/* Card Lapangan */}
-                    <div className="card w-96 bg-base-100 shadow-sm">
+                    <div className="card w-64 bg-base-100 shadow-sm lg:w-96">
                         <figure className="relative">
                             <img src="/assets/field-card.webp" className="h-48 w-full overflow-hidden object-cover" alt="Card figure for card" />
                             <div className="absolute top-2 right-2 badge badge-secondary">
@@ -33,7 +33,7 @@ export default function FeaturedRental(props: PropsType) {
                         </div>
                     </div>
                     {/* Card Gedung/Ruangan */}
-                    <div className="card w-96 bg-base-100 shadow-sm">
+                    <div className="card w-64 bg-base-100 shadow-sm lg:w-96">
                         <figure className="relative">
                             <img src="/assets/room-card.webp" className="h-52 w-full overflow-hidden object-cover" alt="Card figure for card" />
                             <div className="absolute top-2 right-2 badge badge-secondary">
@@ -52,7 +52,7 @@ export default function FeaturedRental(props: PropsType) {
                         </div>
                     </div>
                     {/* Card Kendaraan */}
-                    <div className="card w-96 bg-base-100 shadow-sm">
+                    <div className="card w-64 bg-base-100 shadow-sm lg:w-96">
                         <figure className="relative">
                             <img src="/assets/car-card.webp" className="h-52 w-full overflow-hidden object-cover" alt="Card figure for card" />
                             <div className="absolute top-2 right-2 badge badge-secondary">
@@ -79,4 +79,5 @@ export default function FeaturedRental(props: PropsType) {
             </div>
         </div>
     );
-}
+});
+export default FeaturedRental;

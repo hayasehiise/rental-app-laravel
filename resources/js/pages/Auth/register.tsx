@@ -1,6 +1,7 @@
 import { Link, useForm, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import { IoKey, IoKeyOutline, IoMailOutline, IoPersonOutline } from 'react-icons/io5';
+import { BsFloppy2 } from 'react-icons/bs';
+import { IoEyeOff, IoEyeOutline, IoKey, IoKeyOutline, IoLogOut, IoMailOutline, IoPersonOutline } from 'react-icons/io5';
 import { z } from 'zod';
 
 interface RegisterError {
@@ -17,6 +18,8 @@ export default function RegisterPage() {
         password: '',
         password_confirmation: '',
     });
+    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [showConPassword, setShowConPassword] = useState<boolean>(false);
     const [clientError, setClientError] = useState<RegisterError>({});
     const registerSchema = z
         .object({
@@ -73,26 +76,26 @@ export default function RegisterPage() {
 
                     {flash?.success && <div className="mb-4 rounded bg-green-100 p-3 text-green-800">{flash.success}</div>}
                     {/* Client-side errors */}
-                    {Object.keys(clientError).length > 0 && (
+                    {/* {Object.keys(clientError).length > 0 && (
                         <div className="mb-4 text-red-600">
                             {Object.values(clientError).map((err, i) => (
                                 <p key={i}>{err}</p>
                             ))}
                         </div>
-                    )}
+                    )} */}
 
                     {/* Server-side errors */}
-                    {errors && Object.keys(errors).length > 0 && (
+                    {/* {errors && Object.keys(errors).length > 0 && (
                         <div className="mb-4 text-red-600">
                             {Object.values(errors).map((err, i) => (
                                 <p key={i}>{err}</p>
                             ))}
                         </div>
-                    )}
+                    )} */}
 
                     <label className="fieldset-label">Nama Lengkap</label>
                     <label className={`input w-full ${clientError.name && 'input-error'}`}>
-                        <IoPersonOutline className="h-[1em] opacity-50" />
+                        <IoPersonOutline className="text-lg opacity-50" />
                         <input
                             type="text"
                             value={data.name}
@@ -105,7 +108,7 @@ export default function RegisterPage() {
 
                     <label className="fieldset-label">Email</label>
                     <label className={`input w-full ${clientError.email && 'input-error'}`}>
-                        <IoMailOutline className="h-[1em] opacity-50" />
+                        <IoMailOutline className="text-lg opacity-50" />
                         <input
                             type="email"
                             value={data.email}
@@ -118,35 +121,47 @@ export default function RegisterPage() {
 
                     <label className="fieldset-label">Password</label>
                     <label className={`input w-full ${clientError.password && 'input-error'}`}>
-                        <IoKeyOutline className="h-[1em] opacity-50" />
+                        <IoKeyOutline className="text-lg opacity-50" />
                         <input
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             value={data.password}
                             onChange={(e) => setData('password', e.target.value)}
                             onBlur={() => validateField('password')}
                             className=""
                         />
+                        {!showPassword ? (
+                            <IoEyeOutline onClick={() => setShowPassword(true)} className="cursor-pointer text-2xl" />
+                        ) : (
+                            <IoEyeOff onClick={() => setShowPassword(false)} className="cursor-pointer text-2xl" />
+                        )}
                     </label>
                     {clientError.password && <div className="px-3 text-red-400">{clientError.password}</div>}
 
                     <label className="fieldset-label">Confirm Password</label>
                     <label className={`input w-full ${clientError.password_confirmation && 'input-error'}`}>
-                        <IoKey className="h-[1em] opacity-50" />
+                        <IoKey className="text-lg opacity-50" />
                         <input
-                            type="password"
+                            type={showConPassword ? 'text' : 'password'}
                             value={data.password_confirmation}
                             onChange={(e) => setData('password_confirmation', e.target.value)}
                             onBlur={() => validateField('password_confirmation')}
                             className=""
                         />
+                        {!showConPassword ? (
+                            <IoEyeOutline onClick={() => setShowConPassword(true)} className="cursor-pointer text-2xl" />
+                        ) : (
+                            <IoEyeOff onClick={() => setShowConPassword(false)} className="cursor-pointer text-2xl" />
+                        )}
                     </label>
                     {clientError.password_confirmation && <div className="px-3 text-red-400">{clientError.password_confirmation}</div>}
 
                     <div className="mt-4 flex justify-center gap-5">
-                        <button disabled={processing} className="btn btn-primary">
+                        <button disabled={processing || Object.keys(clientError).length > 0} className="btn btn-primary">
+                            <BsFloppy2 className="text-md" />
                             {processing ? 'Registering...' : 'Register'}
                         </button>
                         <Link className="btn btn-outline" href={route('login.user')}>
+                            <IoLogOut className="text-xl" />
                             Cancel
                         </Link>
                     </div>

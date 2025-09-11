@@ -1,7 +1,13 @@
 import { Link, useForm } from '@inertiajs/react';
 import { useState } from 'react';
+import { HiOutlineLogin } from 'react-icons/hi';
+import { IoCaretBackOutline, IoClipboard, IoEyeOff, IoEyeOutline } from 'react-icons/io5';
 import { z } from 'zod';
 
+interface LoginError {
+    email?: string;
+    password?: string;
+}
 const loginSchema = z.object({
     email: z.email('Masukan Email Yang Benar'),
     password: z.string().min(6, 'Minimal Password 6 karakter'),
@@ -11,8 +17,9 @@ export default function LoginPage() {
         email: '',
         password: '',
     });
+    const [showPassword, setShowPassword] = useState<boolean>(false);
 
-    const [clientErrors, setClientErrors] = useState<{ email: string; password: string }>({});
+    const [clientErrors, setClientErrors] = useState<LoginError>({});
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -58,24 +65,38 @@ export default function LoginPage() {
                     {errors.email && <p className="text-red-500">{errors.email}</p>}
 
                     <label className="label">Password</label>
-                    <input
-                        type="password"
-                        value={data.password}
-                        onChange={(e) => setData('password', e.target.value)}
-                        onBlur={() => handleBlur('password')}
-                        className="input"
-                    />
+                    <label className="input">
+                        <input
+                            type={showPassword ? 'text' : 'password'}
+                            value={data.password}
+                            onChange={(e) => setData('password', e.target.value)}
+                            onBlur={() => handleBlur('password')}
+                        />
+                        {!showPassword ? (
+                            <IoEyeOutline className="text-xl" onClick={() => setShowPassword(true)} />
+                        ) : (
+                            <IoEyeOff className="text-xl" onClick={() => setShowPassword(false)} />
+                        )}
+                    </label>
                     {clientErrors.password && <p className="text-red-500">{clientErrors.password}</p>}
                     {errors.password && <p className="text-red-500">{errors.password}</p>}
 
                     <div className="mt-4 flex justify-center gap-5">
-                        <button className="btn btn-neutral">{processing ? 'Logging In' : 'Login'}</button>
+                        <button className="btn btn-neutral" disabled={processing || Object.keys(clientErrors).length > 0}>
+                            <HiOutlineLogin className="text-xl" />
+                            {processing ? 'Logging In' : 'Login'}
+                        </button>
                         <Link href={route('register.user')} className="btn btn-outline">
+                            <IoClipboard className="text-xl" />
                             Register
                         </Link>
                     </div>
                 </fieldset>
             </form>
+            <Link href={route('home')} className="btn mt-4 btn-ghost">
+                <IoCaretBackOutline className="text-xl" />
+                Go Back
+            </Link>
         </div>
     );
 }

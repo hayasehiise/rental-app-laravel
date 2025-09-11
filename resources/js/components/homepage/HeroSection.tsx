@@ -1,7 +1,10 @@
 import { gsap } from 'gsap';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-export default function HeroSection() {
+interface HeroSectionProps {
+    onGetStarted: () => void;
+}
+const HeroSection = ({ onGetStarted }: HeroSectionProps) => {
     const heroWords = ['Lapangan', 'Gedung', 'Kendaraan'];
     const bgImages = useMemo(() => ['/assets/hero-bg-1.webp', '/assets/hero-bg-2.webp', '/assets/hero-bg-3.webp'], []);
     const [wordIndex, setWordIndex] = useState(0);
@@ -74,9 +77,12 @@ export default function HeroSection() {
                         </span>
                     </h1>
                     <p className="mb-5">Nikmati kemudahan reservasi dengan harga transparan dan layanan terpercaya</p>
-                    <button className="btn btn-primary">Get Started</button>
+                    <button className="btn btn-primary" onClick={onGetStarted}>
+                        Get Started
+                    </button>
                 </div>
             </div>
         </div>
     );
-}
+};
+export default HeroSection;

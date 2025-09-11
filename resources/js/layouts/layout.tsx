@@ -1,6 +1,7 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
+import { CiMenuBurger } from 'react-icons/ci';
 import { FaCar, FaFacebook, FaGlobe, FaHome, FaInstagramSquare, FaPhone, FaRegBuilding } from 'react-icons/fa';
 import { FiLogIn } from 'react-icons/fi';
 import { MdOutlineStadium } from 'react-icons/md';
@@ -20,6 +21,7 @@ function getInitial(name: string) {
 }
 export default function Layout({ children }) {
     const { auth } = usePage<{ auth: { user: any } }>().props;
+    const [showDrawer, setShowDrawer] = useState<boolean>(false);
     // Handle Sub Menu Navbar
     const navbarRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -48,7 +50,8 @@ export default function Layout({ children }) {
                             Rental App
                         </Link>
                     </div>
-                    <div className="flex-none">
+                    {/* Menu jika tablet dan desktop view */}
+                    <div className="hidden md:block md:flex-none">
                         <ul className="menu menu-horizontal gap-5 pr-10">
                             <li>
                                 <Link href={'/'}>
@@ -91,10 +94,6 @@ export default function Layout({ children }) {
                                 </Link>
                             </li>
                             {auth?.user ? (
-                                // <button className="btn btn-error" onClick={() => router.post(route('logout.user'))}>
-                                //     <FiLogOut />
-                                //     Logout
-                                // </button>
                                 <div className="dropdown dropdown-end">
                                     <div tabIndex={0} role="button" className="btn avatar avatar-placeholder btn-circle btn-ghost">
                                         <div className="w-10 rounded-full bg-neutral text-neutral-content">
@@ -119,6 +118,35 @@ export default function Layout({ children }) {
                                 </button>
                             )}
                         </ul>
+                    </div>
+                    {/* Untuk menu mobile */}
+                    <div className="flex-none md:hidden">
+                        {/* <button className="btn btn-ghost">
+                            <CiMenuBurger className="text-2xl" />
+                        </button> */}
+                        {/* Drawer */}
+                        <div className="drawer">
+                            <input id="nav-drawer" type="checkbox" className="drawer-toggle" />
+                            <div className="drawer-content">
+                                {/* Button */}
+                                <label htmlFor="nav-drawer" className="drawer-button btn btn-ghost">
+                                    <CiMenuBurger className="text-2xl" />
+                                </label>
+                            </div>
+                            <div className="drawer-side">
+                                <label htmlFor="nav-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
+                                <ul className="menu min-h-full w-80 bg-base-200 p-4 text-base-content">
+                                    {/* Sidebar content here */}
+                                    <li>
+                                        <a>Sidebar Item 1</a>
+                                    </li>
+                                    <li>
+                                        <a>Sidebar Item 2</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        {/* End Drawer */}
                     </div>
                 </div>
             </header>
