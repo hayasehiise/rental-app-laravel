@@ -88,7 +88,7 @@ class Booking extends Controller
             ]);
 
             // buat order ID unik
-            $orderId = 'RENT-' . $booking->id . '-' . time();
+            $orderId = 'RENT-' . $booking->id . '-' . now()->timestamp;
 
             // buat payment record (pending)
             Payment::create([

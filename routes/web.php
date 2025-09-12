@@ -34,6 +34,6 @@ Route::middleware(['isUser'])->group(function () {
 
 Route::get('/invoice/{booking}', [Invoice::class, 'download'])->middleware(['auth'])->name('invoice.download');
 
-Route::post('/payment/callback', [Payment::class, 'callback'])->name('payment.callback');
+Route::post('/payment/midtrans/callback', [Payment::class, 'callback'])->name('payment.callback');
 
 Route::get('/register/verify/{token}', [FrontendAuth::class, 'verify'])->name('register.verify');

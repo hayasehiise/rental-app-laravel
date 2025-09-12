@@ -24,7 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => EnsureIsAdmin::class,
         ]);
         $middleware->validateCsrfTokens(except: [
-            'payment/callback',
+            'payment/*',
         ]);
         $middleware->trustProxies(at: '*');
     })
