@@ -21,6 +21,8 @@ class RentalResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $navigationLabel = 'Data Rental';
+
     protected static ?int $navigationSort = 1;
 
     protected static ?string $recordTitleAttribute = 'name';
@@ -49,23 +51,6 @@ class RentalResource extends Resource
             'create' => CreateRental::route('/create'),
             'edit' => EditRental::route('/{record}/edit'),
         ];
-    }
-
-    public static function canViewAny(): bool
-    {
-        return auth()->user()->can('viewAny', Rental::class);
-    }
-    public static function canCreate(): bool
-    {
-        return auth()->user()->can('create', Rental::class);
-    }
-    public static function canEdit(Model $record): bool
-    {
-        return auth()->user()->can('update', $record);
-    }
-    public static function canDelete(Model $record): bool
-    {
-        return auth()->user()->can('delete', $record);
     }
 
     public static function shouldRegisterNavigation(): bool
