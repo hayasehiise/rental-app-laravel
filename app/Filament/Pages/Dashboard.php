@@ -4,7 +4,9 @@ namespace App\Filament\Pages;
 
 // use Filament\Pages\Page;
 
+use App\Filament\Widgets\BookingStatWidget;
 use App\Filament\Widgets\DateTimeWidget;
+use App\Filament\Widgets\TransactionStatWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Widgets\AccountWidget;
 
@@ -20,7 +22,8 @@ class Dashboard extends BaseDashboard
     public function getWidgets(): array
     {
         return [
-            //
+            BookingStatWidget::class,
+            TransactionStatWidget::class,
         ];
     }
 

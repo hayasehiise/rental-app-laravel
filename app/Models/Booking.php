@@ -43,6 +43,10 @@ class Booking extends Model
     {
         return $query->where('status', '!=', 'cancelled');
     }
+    public function scopePaid($query)
+    {
+        return $query->where('status', 'paid');
+    }
     public function isPaid(): bool
     {
         return $this->status === 'paid';

@@ -15,6 +15,6 @@ class RentalCategory extends Model
 
     public function rentals(): HasMany
     {
-        return $this->hasMany(Rental::class);
+        return $this->hasMany(Rental::class, 'category_id');
     }
 }

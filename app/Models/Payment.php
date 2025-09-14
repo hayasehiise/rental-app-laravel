@@ -25,4 +25,10 @@ class Payment extends Model
     {
         return $this->belongsTo(Booking::class, 'booking_id');
     }
+
+    //helper
+    public function scopePaid($query)
+    {
+        return $query->where('transaction_status', 'capture');
+    }
 }

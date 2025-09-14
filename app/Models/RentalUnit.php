@@ -27,4 +27,8 @@ class RentalUnit extends Model
     {
         return $this->belongsTo(Rental::class, 'rental_id');
     }
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
 }
