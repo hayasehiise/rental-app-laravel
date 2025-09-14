@@ -16,13 +16,11 @@ class RentalForm
                 TextInput::make('name')
                     ->label('Nama Rental')
                     ->required(),
-                Select::make('type')
-                    ->label('Tipe')
-                    ->options([
-                        'lapangan' => 'Lapangan',
-                        'gedung' => 'Gedung',
-                        'kendaraan' => 'Kendaraan',
-                    ])
+                Select::make('category_id')
+                    ->label('Kategory')
+                    ->relationship('category', 'name')
+                    ->searchable()
+                    ->preload()
                     ->required(),
                 Textarea::make('description')
                     ->label('Deskripsi')

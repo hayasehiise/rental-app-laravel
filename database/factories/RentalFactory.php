@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\RentalCategory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +19,7 @@ class RentalFactory extends Factory
     {
         return [
             'name' => $this->faker->company . ' Rental',
-            'Type' => $this->faker->randomElement(['lapangan', 'gedung', 'kendaraan']),
+            'category_id' => RentalCategory::inRandomOrder()->first()?->id,
             'description' => $this->faker->paragraph()
         ];
     }

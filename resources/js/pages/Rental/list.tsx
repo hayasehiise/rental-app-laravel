@@ -19,6 +19,14 @@ interface RentalUnit {
     is_available: boolean;
     image: RentalUnitImage[];
 }
+
+interface RentalCategory {
+    id: number;
+    name: string;
+    slug: string;
+    description: string;
+}
+
 interface PaginatedProps {
     data: RentalUnit[];
     current_page: number;
@@ -27,6 +35,8 @@ interface PaginatedProps {
 interface PageProps extends InertiaPageProps {
     rental: {
         id: number;
+        name: string;
+        category: RentalCategory;
     };
     units: PaginatedProps;
 }

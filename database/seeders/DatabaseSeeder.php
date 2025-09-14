@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             AdminUserSeeder::class,
             TestGuestSeeder::class,
+            RentalCategorySeeder::class,
             RentalSeeder::class,
         ]);
     }

@@ -9,6 +9,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class RentalsTable
@@ -20,23 +21,38 @@ class RentalsTable
                 TextColumn::make('name')
                     ->label('Nama Rental')
                     ->searchable(),
-                TextColumn::make('type')
-                    ->label('Type')
+                // TextColumn::make('type')
+                //     ->label('Type')
+                //     ->badge()
+                //     ->color('info')
+                //     ->icon(fn(string $state) => match ($state) {
+                //         'lapangan' => 'tabler-building-stadium',
+                //         'gedung' => 'tabler-building',
+                //         'kendaraan' => 'tabler-car',
+                //         default     => 'heroicon-o-question-mark-circle',
+                //     })
+                //     ->formatStateUsing(fn(string $state) => $state ? ucwords($state) : '-'),
+                TextColumn::make('category.name')
+                    ->label('Kategori')
                     ->badge()
                     ->color('info')
-                    ->icon(fn(string $state) => match ($state) {
+                    ->icon(fn($record) => match ($record->category?->slug) {
                         'lapangan' => 'tabler-building-stadium',
-                        'gedung' => 'tabler-building',
+                        'gedung'   => 'tabler-building',
                         'kendaraan' => 'tabler-car',
-                        default     => 'heroicon-o-question-mark-circle',
+                        default    => 'heroicon-o-question-mark-circle',
                     })
-                    ->formatStateUsing(fn(string $state) => $state ? ucwords($state) : '-'),
+                    ->formatStateUsing(fn($record) => $record->category?->name ?? '-'),
                 TextColumn::make('created_at')
                     ->date('d/m/Y')
                     ->sortable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('category_id')
+                    ->label('Filter Kategory')
+                    ->relationship('category', 'name')
+                    ->searchable()
+                    ->preload(),
             ])
             ->recordUrl(fn($record) => RentalUnitResource::getUrl('index', [
                 'rental_id' => $record->id

@@ -14,6 +14,13 @@ interface RentalUnit {
     image: RentalUnitImage[];
 }
 
+interface RentalCategory {
+    id: number;
+    name: string;
+    slug: string;
+    description: string;
+}
+
 interface Rental {
     id: number;
     name: string;
@@ -21,6 +28,7 @@ interface Rental {
     description: string;
     units: RentalUnit[];
     created_at: string;
+    category: RentalCategory;
 }
 interface PaginatedRentals {
     data: Rental[];
@@ -171,7 +179,7 @@ function RentalCard({ rental }: { rental: Rental }) {
             <div className="card-body">
                 <h2 className="card-title">
                     {rental.name}
-                    <div className="badge badge-info">{rental.type}</div>
+                    <div className="badge badge-info">{rental.category.name}</div>
                 </h2>
                 <p>{rental.description ?? 'Tanpa Deskripsi'}</p>
                 <div className="card-actions justify-end">

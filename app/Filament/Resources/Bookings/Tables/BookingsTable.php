@@ -44,21 +44,6 @@ class BookingsTable
                     ->numeric()
                     ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 0, ',', '.'))
                     ->sortable(),
-                // TextColumn::make('status')
-                //     ->badge()
-                //     ->formatStateUsing(fn(string $state) => strtoupper($state))
-                //     ->color(fn($state) => match ($state) {
-                //         'paid' => 'success',
-                //         'pending' => 'warning',
-                //         'cancelled' => 'danger',
-                //         default => 'gray'
-                //     })
-                //     ->icon(fn($state) => match ($state) {
-                //         'paid' => 'fas-check-circle',
-                //         'pending' => 'fas-pause-circle',
-                //         'cancelled' => 'heroicon-s-x-circle',
-                //         default => 'heroicon-s-question-mark-circle'
-                //     }),
                 IconColumn::make('status')
                     ->color(fn($state) => match ($state) {
                         'paid' => 'success',
@@ -105,7 +90,8 @@ class BookingsTable
                             ->send(new BookingInvoice($record));
                     })
                     ->successNotificationTitle('Invoice Email Send')
-                    ->authorize(fn(Booking $record) => Gate::allows('sendInvoice', $record)),
+                    ->authorize(fn(Booking $record) => Gate::allows('sendInvoice', $record))
+                    ->visible(fn(Booking $record): bool => !in_array($record->status, ['pending', 'cancelled'])),
                 EditAction::make()
                     ->label('')
                     ->tooltip('Edit Record')

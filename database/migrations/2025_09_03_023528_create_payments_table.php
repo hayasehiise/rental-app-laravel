@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('booking_id')->constrained('bookings')->cascadeOnDelete();
             $table->string('order_id')->unique();
+            $table->string('snap_token')->nullable();
             $table->string('transaction_id')->nullable();
             $table->string('payment_type')->nullable();
             $table->string('transaction_status')->default('pending');

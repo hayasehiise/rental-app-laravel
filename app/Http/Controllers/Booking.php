@@ -19,7 +19,7 @@ class Booking extends Controller
 {
     public function create($unitId)
     {
-        $unit = RentalUnit::with('image')->findOrFail($unitId);
+        $unit = RentalUnit::with(['image', 'rental.category'])->findOrFail($unitId);
 
         $bookings = ModelsBooking::where('rental_unit_id', $unitId)
             ->whereDate('start_time', '>=', now()->toDateString())
@@ -35,16 +35,20 @@ class Booking extends Controller
             'end_time' => ['required', 'date', 'after:start_time'],
         ]);
 
-        $unit = RentalUnit::findOrFail($unitId);
+        $unit = RentalUnit::with(['image', 'rental.category'])->findOrFail($unitId);
 
         // cek apakah tanggal mulai atau selesai jatuh di hari sabtu (khusus lapangan/gedung)
         $start = Carbon::parse($request->start_time);
         $end = Carbon::parse($request->end_time);
 
-        if ($start->isSaturday() || $end->isSaturday()) {
-            throw ValidationException::withMessages([
-                'booking' => 'Tidak Bisa Memesan Dihari Sabtu'
-            ]);
+        $category = $unit->rental->category->slug;
+
+        if (in_array($category, ['lapangan', 'gedung'])) {
+            if ($start->isSaturday() || $end->isSaturday()) {
+                throw ValidationException::withMessages([
+                    'booking' => 'Tidak Bisa Memesan Dihari Sabtu'
+                ]);
+            }
         }
 
         // Gunakan transaction atomicity
@@ -140,19 +144,37 @@ class Booking extends Controller
         Config::$isSanitized = config('midtrans.is_sanitized');
         Config::$is3ds = config('midtrans.is_3ds');
 
-        // buat params snap Token
-        $params = [
-            'transaction_details' => [
-                'order_id' => $payment->order_id,
-                'gross_amount' => (int) $booking->final_price,
-            ],
-            'customer_details' => [
-                'first_name' => auth()->user()->name,
-                'email' => auth()->user()->email,
-            ],
-        ];
+        if (!$payment->snap_token) {
+            // Buat snap token baru hanya jika belum ada
+            $orderId = $payment->order_id; // tetap pakai order_id yang sudah dibuat saat store
 
-        $snapToken = Snap::getSnapToken($params);
+            $params = [
+                'transaction_details' => [
+                    'order_id' => $orderId,
+                    'gross_amount' => (int) $booking->final_price,
+                ],
+                'customer_details' => [
+                    'first_name' => $booking->user->name,
+                    'email' => $booking->user->email,
+                ],
+                'expiry' => [
+                    'start_time' => now()->format('Y-m-d H:i:s O'),
+                    'unit'       => 'minutes',
+                    'duration'   => 15,
+                ],
+            ];
+
+            $snapToken = Snap::getSnapToken($params);
+
+            // Update payment dengan snap_token baru
+            $payment->update([
+                'snap_token' => $snapToken,
+                'transaction_status' => 'pending',
+            ]);
+        } else {
+            // Pakai snap_token yang sudah ada
+            $snapToken = $payment->snap_token;
+        }
 
         return Inertia::render('Booking/payment', compact('snapToken', 'booking'));
     }

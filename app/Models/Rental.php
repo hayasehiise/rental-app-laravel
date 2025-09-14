@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Rental extends Model
@@ -12,7 +13,7 @@ class Rental extends Model
 
     protected $fillable = [
         'name',
-        'type',
+        'category_id',
         'description',
     ];
 
@@ -20,5 +21,9 @@ class Rental extends Model
     public function units(): HasMany
     {
         return $this->hasMany(RentalUnit::class);
+    }
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(RentalCategory::class, 'category_id');
     }
 }

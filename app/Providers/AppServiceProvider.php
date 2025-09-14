@@ -5,9 +5,11 @@ namespace App\Providers;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Rental;
+use App\Models\RentalCategory;
 use App\Models\RentalImage;
 use App\Models\RentalUnit;
 use App\Policies\Admin\BookingPolicy;
+use App\Policies\Admin\RentalCategoryPolicy;
 use App\Policies\Admin\RentalImagePolicy;
 use App\Policies\Admin\RentalPolicy;
 use App\Policies\Admin\RentalUnitPolicy;
@@ -44,5 +46,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Payment::class, TransactionPolicy::class);
         Gate::policy(RentalUnit::class, RentalUnitPolicy::class);
         Gate::policy(RentalImage::class, RentalImagePolicy::class);
+        Gate::policy(RentalCategory::class, RentalCategoryPolicy::class);
     }
 }

@@ -12,10 +12,20 @@ interface Booking {
     status: 'pending' | 'paid' | 'cancelled';
 }
 
+interface RentalCategory {
+    id: number;
+    name: string;
+    slug: string;
+    description: string;
+}
+
 interface Unit {
     id: number;
     name: string;
     price: number;
+    rental: {
+        category: RentalCategory;
+    };
 }
 
 interface PageProps extends InertiaPageProps {
@@ -56,7 +66,7 @@ export default function BookingPage() {
 
             if (end <= start) {
                 setDataError('Waktu Selesai harus lebih besar dari Waktu Mulai');
-            } else if (start.getDay() === 6 || end.getDay() === 6) {
+            } else if (['lapangan', 'gedung'].includes(unit.rental.category.slug) && (start.getDay() === 6 || end.getDay() === 6)) {
                 setDataError('Tidak tersedia untuk hari sabtu');
             } else if (isOverlapping(start, end)) {
                 setDataError('Rentang Waktu sudah ada yang isi');
@@ -64,7 +74,7 @@ export default function BookingPage() {
                 setDataError(null);
             }
         }
-    }, [data.start_time, data.end_time, isOverlapping]);
+    }, [data.start_time, data.end_time, isOverlapping, unit.rental.category.slug]);
 
     function onSubmit(e: FormEvent) {
         e.preventDefault();
