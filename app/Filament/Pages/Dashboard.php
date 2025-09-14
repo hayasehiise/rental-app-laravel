@@ -34,8 +34,8 @@ class Dashboard extends BaseDashboard
     protected function getHeaderWidgets(): array
     {
         return [
-            AccountWidget::class,
             DateTimeWidget::class,
+            AccountWidget::class,
         ];
     }
 
