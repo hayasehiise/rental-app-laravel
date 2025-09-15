@@ -9,7 +9,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class BookingStatWidget extends StatsOverviewWidget
 {
-    protected ?string $pollingInterval = null;
+    protected ?string $pollingInterval = '10s';
     protected function getStats(): array
     {
         $stats = [];
@@ -38,6 +38,7 @@ class BookingStatWidget extends StatsOverviewWidget
 
     public static function canView(): bool
     {
-        return auth()->user()->can('viewAny', Booking::class);
+        $user = auth()->user();
+        return $user->can('viewAny', Booking::class);
     }
 }

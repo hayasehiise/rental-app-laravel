@@ -86,7 +86,7 @@ export default function BookingPage() {
 
     return (
         <Layout>
-            <div className="mt-25 mb-5">
+            <div className="flex flex-col w-full h-[100dvh] mb-5 justify-center items-center">
                 <h1 className="mb-4 text-2xl font-bold">Booking {unit.name}</h1>
                 <form onSubmit={onSubmit} className="space-y-4">
                     <fieldset className="fieldset w-sm rounded-box border border-base-300 bg-base-200 p-4">
@@ -113,10 +113,11 @@ export default function BookingPage() {
                             {dataError && <p className="text-red-400">{dataError}</p>}
                         </div>
 
-                        <div className="mt-4 flex">
+                        <div className="flex gap-3 justify-center">
                             <button type="submit" disabled={processing || !!dataError} className="btn btn-primary">
-                                {processing ? '...Process' : 'Book & Pay'}
+                            {processing ? '...Proses' : 'Book & Pay'}
                             </button>
+                            <button className='btn btn-outline' onClick={() => window.history.back()}>Back</button>
                         </div>
                     </fieldset>
                 </form>

@@ -22,7 +22,7 @@ class TransactionResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'order_id';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 6;
 
     protected static ?string $pluralModelLabel = "Transaksi User";
 

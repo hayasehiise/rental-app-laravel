@@ -8,6 +8,8 @@ use App\Models\Rental;
 use App\Models\RentalCategory;
 use App\Models\RentalImage;
 use App\Models\RentalUnit;
+use App\Models\User;
+use App\Policies\Admin\AdminUserPolicy;
 use App\Policies\Admin\BookingPolicy;
 use App\Policies\Admin\RentalCategoryPolicy;
 use App\Policies\Admin\RentalImagePolicy;
@@ -47,5 +49,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(RentalUnit::class, RentalUnitPolicy::class);
         Gate::policy(RentalImage::class, RentalImagePolicy::class);
         Gate::policy(RentalCategory::class, RentalCategoryPolicy::class);
+        Gate::policy(User::class, AdminUserPolicy::class);
     }
 }

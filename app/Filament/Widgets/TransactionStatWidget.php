@@ -9,6 +9,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class TransactionStatWidget extends StatsOverviewWidget
 {
+    protected ?string $pollingInterval = '10s';
     protected function getStats(): array
     {
         $stats = [];
@@ -27,6 +28,7 @@ class TransactionStatWidget extends StatsOverviewWidget
 
     public static function canView(): bool
     {
-        return auth()->user()->can('viewAny', Payment::class);
+        $user = auth()->user();
+        return $user->can('viewAny', Payment::class);
     }
 }

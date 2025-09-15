@@ -6,6 +6,7 @@ use App\Mail\BookingInvoice;
 use App\Models\Booking;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
@@ -96,6 +97,10 @@ class BookingsTable
                     ->label('')
                     ->tooltip('Edit Record')
                     ->iconSize('lg'),
+                DeleteAction::make()
+                ->label('')
+                ->tooltip('Delete Record')
+                ->iconSize('lg'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

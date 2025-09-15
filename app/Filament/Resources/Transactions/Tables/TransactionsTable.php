@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Transactions\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Support\Enums\IconSize;
@@ -30,19 +31,25 @@ class TransactionsTable
                     ->icon(fn(string $state) => match ($state) {
                         'capture' => 'heroicon-s-check-circle',
                         'pending' => 'heroicon-s-pause-circle',
-                        'cancelled' => 'heroicon-s-x-circle'
+                        'cancelled' => 'heroicon-s-x-circle',
+                        'deny' => 'heroicon-s-x-circle',
+                        'expire' => 'heroicon-s-x-circle'
                     })
                     ->color(fn(string $state) => match ($state) {
                         'capture' => 'success',
                         'pending' => 'warning',
                         'cancelled' => 'danger',
+                        'expire' => 'danger',
+                        'deny' => 'danger',
                         default => 'primary'
                     })
                     ->size('2xl')
                     ->tooltip(fn(string $state) => match ($state) {
                         'capture' => 'Paid',
                         'pending' => 'Pending',
-                        'cancelled' => 'Cancelled'
+                        'cancelled' => 'Cancelled',
+                        'expire' => 'Expired',
+                        'deny' => 'Denied',
                     }),
             ])
             ->filters([
@@ -50,6 +57,7 @@ class TransactionsTable
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
