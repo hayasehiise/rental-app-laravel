@@ -73,9 +73,9 @@ export default function LoginPage() {
                             onBlur={() => handleBlur('password')}
                         />
                         {!showPassword ? (
-                            <IoEyeOutline className="text-xl" onClick={() => setShowPassword(true)} />
+                            <IoEyeOutline className="text-xl cursor-pointer" onClick={() => setShowPassword(true)} />
                         ) : (
-                            <IoEyeOff className="text-xl" onClick={() => setShowPassword(false)} />
+                            <IoEyeOff className="text-xl cursor-pointer" onClick={() => setShowPassword(false)} />
                         )}
                     </label>
                     {clientErrors.password && <p className="text-red-500">{clientErrors.password}</p>}

@@ -40,13 +40,15 @@ interface PageProps extends InertiaPageProps {
     type: string | null;
 }
 export default function RentalIndex() {
-    const { rentals } = usePage<PageProps>().props;
+    const { rentals, type: initialType } = usePage<PageProps>().props;
 
     //State lokal untuk meyimpan list yang sudah diload
     const [item, setItem] = useState<Rental[]>(rentals.data);
     const [page, setPage] = useState(rentals.current_page);
     const [lastPage, setLastPage] = useState(rentals.last_page);
     const [loading, setLoading] = useState(false);
+    // simpan type (bisa berubah kalau kamu punya filter UI)
+    const [queryType] = useState<string | null>(initialType ?? null);
 
     // untuk infinite scroll
     const parentRef = useRef<HTMLDivElement>(null);
@@ -76,9 +78,11 @@ export default function RentalIndex() {
     function loadMore() {
         if (loading || page >= lastPage) return;
         setLoading(true);
+        const params: Record<string, any> = { page: page + 1 };
+        if (queryType) params.type = queryType;
         router.get(
             route('rental.index'),
-            { page: page + 1 },
+            params,
             {
                 preserveScroll: true,
                 preserveState: true,
