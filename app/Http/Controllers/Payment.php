@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendBookingReminder;
+use App\Models\BookingReminder;
 use App\Models\Payment as ModelsPayment;
 use Illuminate\Http\Request;
 use Midtrans\Config;
@@ -44,6 +46,18 @@ class Payment extends Controller
         $booking = $payment->booking;
         if ($transactionStatus === 'capture' || $transactionStatus === 'settlement') {
             $booking->update(['status' => 'paid']);
+
+            foreach ([30, 15, 5] as $minutes) {
+                $scheduleAt = $booking->start_time->copy()->subMinutes($minutes);
+
+                $reminder = BookingReminder::create([
+                    'booking_id' => $booking->id,
+                    'minutes_before' => $minutes,
+                    'schedule_at' => $scheduleAt,
+                ]);
+
+                SendBookingReminder::dispatch($reminder)->delay($scheduleAt);
+            }
         } elseif (in_array($transactionStatus, ['deny', 'cancel', 'expire'])) {
             $booking->update(['status' => 'cancelled']);
         }

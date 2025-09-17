@@ -16,6 +16,7 @@ use App\Policies\Admin\RentalImagePolicy;
 use App\Policies\Admin\RentalPolicy;
 use App\Policies\Admin\RentalUnitPolicy;
 use App\Policies\Admin\TransactionPolicy;
+use App\Services\TelegramService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -28,7 +29,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(TelegramService::class, function ($app) {
+            return new TelegramService(
+                $app['config']['services.telegram.bot_token'],
+                $app['config']['services.telegram.chat_id'],
+            );
+        });
     }
 
     /**
