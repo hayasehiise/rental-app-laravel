@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Events\BookingCreated;
 use App\Events\PaymentCreated;
 use App\Models\Booking;
+use App\Models\BookingType;
 use App\Models\RentalUnit;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -14,7 +15,7 @@ use Midtrans\Snap;
 
 class BookingService
 {
-    public function create(array $data, int $unitId): Booking
+    public function create(array $data, int $unitId, BookingType $bookingType, bool $hasReachLimit): Booking
     {
         $unit = RentalUnit::with(['rental.category'])->findOrFail($unitId);
 
@@ -48,18 +49,30 @@ class BookingService
             ]);
         }
 
-        return DB::transaction(function () use ($data, $unit, $start, $end) {
+        return DB::transaction(function () use ($data, $unit, $start, $end, $bookingType, $hasReachLimit) {
             // hitung harga
             $hours = $start->diffInHours($end);
-            $days = (int) ceil($hours / 24);
-            $finalPrice = $unit->price * $days;
+
+            if ($bookingType->code === 'member') {
+                if ($hasReachLimit) {
+                    $price = $unit->member_price;
+                    $finalPrice = $price * $hours;
+                } else {
+                    $price = 0;
+                    $finalPrice = 0;
+                }
+            } else {
+                $price = $unit->hourly_price;
+                $finalPrice = $price * $hours;
+            }
 
             $booking = Booking::create([
                 'user_id' => auth()->user()->id,
                 'rental_unit_id' => $unit->id,
+                'booking_type_id' => $bookingType->id,
                 'start_time' => $start,
                 'end_time' => $end,
-                'price' => $unit->price,
+                'price' => $price,
                 'discount' => 0,
                 'final_price' => $finalPrice,
                 'status' => 'pending',

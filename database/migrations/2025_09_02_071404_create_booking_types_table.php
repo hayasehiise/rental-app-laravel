@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rental_units', function (Blueprint $table) {
+        Schema::create('booking_types', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('rental_id')->constrained('rentals')->cascadeOnDelete();
+            $table->string('code')->unique();
             $table->string('name');
-            $table->decimal('hourly_price', 15, 2);
-            $table->decimal('member_price', 15, 2)->nullable();
-            $table->boolean('is_available')->default(true);
+            $table->integer('monthly_limit')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rental_units');
+        Schema::dropIfExists('booking_types');
     }
 };

@@ -16,6 +16,7 @@ return new class extends Migration
             // Relasi tabel
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('rental_unit_id')->constrained('rental_units')->cascadeOnDelete();
+            $table->foreignId('booking_type_id')->constrained('booking_types')->cascadeOnDelete();
             // Jadwal Booking
             $table->dateTime('start_time');
             $table->dateTime('end_time');

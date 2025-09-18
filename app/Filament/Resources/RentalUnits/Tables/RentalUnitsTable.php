@@ -11,7 +11,6 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use PhpParser\Node\Stmt\Label;
 
 class RentalUnitsTable
 {
@@ -22,8 +21,12 @@ class RentalUnitsTable
                 TextColumn::make('name')
                     ->label('Nama Unit')
                     ->searchable(),
-                TextColumn::make('price')
-                    ->label('Harga')
+                TextColumn::make('hourly_price')
+                    ->label('Harga Perjam')
+                    ->formatStateUsing(fn($state) => 'Rp' . number_format($state, 0, ',', '.'))
+                    ->sortable(),
+                TextColumn::make('member_price')
+                    ->label('Harga Member')
                     ->formatStateUsing(fn($state) => 'Rp' . number_format($state, 0, ',', '.'))
                     ->sortable(),
                 IconColumn::make('is_available')

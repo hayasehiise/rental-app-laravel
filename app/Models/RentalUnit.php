@@ -14,7 +14,8 @@ class RentalUnit extends Model
     protected $fillable = [
         'rental_id',
         'name',
-        'price',
+        'hourly_price',
+        'member_price',
         'is_available',
     ];
 

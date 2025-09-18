@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             TestGuestSeeder::class,
             RentalCategorySeeder::class,
             RentalSeeder::class,
+            BookingTypeSeeder::class,
         ]);
     }
 }

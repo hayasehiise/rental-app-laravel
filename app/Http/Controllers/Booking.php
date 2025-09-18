@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking as ModelsBooking;
+use App\Models\BookingType;
 use App\Models\Payment;
 use App\Models\RentalUnit;
 use App\Services\BookingService;
@@ -33,7 +34,31 @@ class Booking extends Controller
             ->whereDate('start_time', '>=', now()->toDateString())
             ->get();
 
-        return Inertia::render('Booking/create', compact('unit', 'bookings'));
+        $user = auth()->user();
+        $bookingTypeCode = $user->hasRole('member') ? 'member' : 'hourly';
+
+        $bookingType = BookingType::where('code', $bookingTypeCode)->firstOrFail();
+
+        $hasReachLimit = false;
+        if ($bookingType->monthly_limit) {
+            $count = ModelsBooking::where('user_id', $user->id)
+                ->where('booking_type_id', $bookingType->id)
+                ->whereBetween('start_time', [
+                    Carbon::now()->startOfMonth(),
+                    Carbon::now()->endOfMonth(),
+                ])
+                ->count();
+
+            $hasReachLimit = $count >= $bookingType->monthly_limit;
+        }
+
+        return Inertia::render('Booking/create', [
+            'unit' => $unit,
+            'bookings' => $bookings,
+            'bookingType' => $bookingType->code,
+            'monthlyLimit' => $bookingType->monthly_limit,
+            'hasReachedLimit' => $hasReachLimit,
+        ]);
     }
 
     public function store(Request $request, $unitId)
@@ -43,7 +68,25 @@ class Booking extends Controller
             'end_time' => ['required', 'date', 'after:start_time'],
         ]);
 
-        $booking = $this->bookingService->create($request->only('start_time', 'end_time'), $unitId);
+        $user = auth()->user();
+        $bookingTypeCode = $user->hasRole('member') ? 'member' : 'hourly';
+        $bookingType = BookingType::where('code', $bookingTypeCode)->firstOrFail();
+
+        $hasReachLimit = false;
+        // cek limit member
+        if ($bookingType->monthly_limit) {
+            $count = Booking::where('user_id', $user->id)
+                ->where('booking_type_id', $bookingType->id)
+                ->whereBetween('start_time', [
+                    Carbon::now()->startOfMonth(),
+                    Carbon::now()->endOfMonth(),
+                ])
+                ->count();
+
+            $hasReachLimit = $count >= $bookingType->monthly_limit;
+        }
+
+        $booking = $this->bookingService->create($request->only('start_time', 'end_time'), $unitId, $bookingType, $hasReachLimit);
 
         return redirect()->route('booking.payment', $booking);
     }
