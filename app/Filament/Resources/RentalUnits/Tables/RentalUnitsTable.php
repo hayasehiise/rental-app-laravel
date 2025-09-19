@@ -21,12 +21,8 @@ class RentalUnitsTable
                 TextColumn::make('name')
                     ->label('Nama Unit')
                     ->searchable(),
-                TextColumn::make('hourly_price')
-                    ->label('Harga Perjam')
-                    ->formatStateUsing(fn($state) => 'Rp' . number_format($state, 0, ',', '.'))
-                    ->sortable(),
-                TextColumn::make('member_price')
-                    ->label('Harga Member')
+                TextColumn::make('price')
+                    ->label('Harga')
                     ->formatStateUsing(fn($state) => 'Rp' . number_format($state, 0, ',', '.'))
                     ->sortable(),
                 IconColumn::make('is_available')

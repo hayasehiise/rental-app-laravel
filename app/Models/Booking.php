@@ -12,11 +12,10 @@ class Booking extends Model
     protected $fillable = [
         'user_id',
         'rental_unit_id',
-        'booking_type_id',
+        'discount_id',
         'start_time',
         'end_time',
         'price',
-        'discount',
         'final_price',
         'status',
     ];
@@ -43,9 +42,9 @@ class Booking extends Model
     {
         return $this->hasMany(BookingReminder::class);
     }
-    public function type(): BelongsTo
+    public function discount(): BelongsTo
     {
-        return $this->belongsTo(BookingType::class, 'booking_type_id');
+        return $this->belongsTo(Discount::class, 'discount_id');
     }
 
     // Helpers

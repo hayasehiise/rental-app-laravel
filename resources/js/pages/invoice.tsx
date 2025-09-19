@@ -9,10 +9,15 @@ interface User {
     name: string;
     email: string;
 }
+interface Category {
+    id: number;
+    name: string;
+    slug: string;
+}
 interface Rental {
     id: number;
     name: string;
-    type: string;
+    category: Category;
 }
 interface Unit {
     id: number;
@@ -23,12 +28,16 @@ interface Payment {
     id: number;
     order_id: string;
 }
+interface Discount {
+    name: string;
+    percentage: number;
+}
 interface Booking {
     id: number;
     start_time: string;
     end_time: string;
     price: number;
-    discount: number;
+    discount: Discount;
     final_price: number;
     unit: Unit;
     user: User;

@@ -22,6 +22,10 @@ interface Payment {
     order_id: string;
     transaction_status: string;
 }
+interface Discount {
+    name: string;
+    percentage: number;
+}
 interface Booking {
     id: number;
     user_id: number;
@@ -29,7 +33,7 @@ interface Booking {
     start_time: string;
     end_time: string;
     price: number;
-    discount: number;
+    discount: Discount;
     final_price: number;
     unit: Unit;
     payment: Payment;
@@ -96,7 +100,7 @@ export default function PaymentPage() {
                         </p>
                         <p>
                             <span className="font-semibold">Diskon : </span>
-                            {Number(booking.discount)}%
+                            {booking.discount ? Number(booking.discount.percentage) : Number(0)}%
                         </p>
                         <p>
                             <span className="font-semibold">Total Harga : </span>

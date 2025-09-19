@@ -19,12 +19,7 @@ class RentalUnitForm
                 TextInput::make('name')
                     ->label('Nama Unit')
                     ->required(),
-                TextInput::make('hourly_price')
-                    ->label('Harga Perjam')
-                    ->numeric()
-                    ->prefix('Rp')
-                    ->required(),
-                TextInput::make('member_price')
+                TextInput::make('price')
                     ->label('Harga Perjam')
                     ->numeric()
                     ->prefix('Rp')

@@ -16,13 +16,12 @@ return new class extends Migration
             // Relasi tabel
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('rental_unit_id')->constrained('rental_units')->cascadeOnDelete();
-            $table->foreignId('booking_type_id')->constrained('booking_types')->cascadeOnDelete();
+            $table->foreignId('discount_id')->nullable()->constrained('discounts')->nullOnDelete();
             // Jadwal Booking
             $table->dateTime('start_time');
             $table->dateTime('end_time');
             // Harga dan Diskon
             $table->unsignedBigInteger('price');
-            $table->integer('discount')->default(0);
             $table->unsignedBigInteger('final_price');
             // Status booking
             $table->enum('status', ['pending', 'paid', 'cancelled'])->default('pending');

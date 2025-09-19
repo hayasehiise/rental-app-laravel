@@ -20,8 +20,7 @@ class RentalUnitFactory extends Factory
         return [
             'rental_id' => Rental::factory(),
             'name' => $this->faker->word() . ' Unit',
-            'hourly_price' => $this->faker->randomFloat(0, 50000, 300000),
-            'member_price' => $this->faker->randomFloat(0, 350000, 1100000),
+            'price' => $this->faker->randomFloat(0, 50000, 300000),
             'is_available' => $this->faker->boolean(100)
         ];
     }

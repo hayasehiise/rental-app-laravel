@@ -2,20 +2,20 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
+use Midtrans\Snap;
+use Midtrans\Config;
+use App\Models\Booking;
+use App\Models\Discount;
+use App\Models\RentalUnit;
 use App\Events\BookingCreated;
 use App\Events\PaymentCreated;
-use App\Models\Booking;
-use App\Models\BookingType;
-use App\Models\RentalUnit;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-use Midtrans\Config;
-use Midtrans\Snap;
 
 class BookingService
 {
-    public function create(array $data, int $unitId, BookingType $bookingType, bool $hasReachLimit): Booking
+    public function create(array $data, int $unitId, bool $isMember): Booking
     {
         $unit = RentalUnit::with(['rental.category'])->findOrFail($unitId);
 
@@ -49,31 +49,40 @@ class BookingService
             ]);
         }
 
-        return DB::transaction(function () use ($data, $unit, $start, $end, $bookingType, $hasReachLimit) {
-            // hitung harga
-            $hours = $start->diffInHours($end);
-
-            if ($bookingType->code === 'member') {
-                if ($hasReachLimit) {
-                    $price = $unit->member_price;
-                    $finalPrice = $price * $hours;
-                } else {
-                    $price = 0;
-                    $finalPrice = 0;
-                }
+        return DB::transaction(function () use ($data, $unit, $start, $end, $isMember) {
+            if ($category === 'kendaraan') {
+                // hitung harga
+                $days = max(1, $start->diffInDays($end));
+                $basePrice = $unit->price;
+                $price = $basePrice * $days;
             } else {
-                $price = $unit->hourly_price;
-                $finalPrice = $price * $hours;
+                // hitung harga
+                $hours = max(1, $start->diffInHours($end));
+                $basePrice = $unit->price;
+                $price = $basePrice * $hours;
             }
+
+            $discount = Discount::where('is_member_only', $isMember)
+                ->where(function ($q) use ($start) {
+                    $q->whereNull('start_time')->orWhere('start_time', '<=', $start);
+                })
+                ->where(function ($q) use ($end) {
+                    $q->whereNull('end_time')->orWhere('end_time', '>=', $end);
+                })
+                ->orderByDesc('percentage')
+                ->first();
+
+            $discountvalue = $discount ? $discount->percentage : 0;
+            $finalPrice = $price - ($price * ($discountvalue / 100));
+
 
             $booking = Booking::create([
                 'user_id' => auth()->user()->id,
                 'rental_unit_id' => $unit->id,
-                'booking_type_id' => $bookingType->id,
+                'discount_id' => $discount?->id,
                 'start_time' => $start,
                 'end_time' => $end,
                 'price' => $price,
-                'discount' => 0,
                 'final_price' => $finalPrice,
                 'status' => 'pending',
             ]);

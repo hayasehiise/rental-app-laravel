@@ -7,10 +7,15 @@ interface User {
     name: string;
     email: string;
 }
+interface Category {
+    id: number;
+    name: string;
+    slug: string;
+}
 interface Rental {
     id: number;
     name: string;
-    type: string;
+    category: Category;
 }
 interface Unit {
     id: number;
@@ -21,12 +26,16 @@ interface Payment {
     id: number;
     order_id: string;
 }
+interface Discount {
+    name: string;
+    percentage: number;
+}
 interface Booking {
     id: number;
     start_time: string;
     end_time: string;
     price: number;
-    discount: number;
+    discount: Discount;
     final_price: number;
     unit: Unit;
     user: User;
@@ -77,7 +86,7 @@ export default function InvoiceTemplate({ booking }: InvoiceProps) {
                         <View style={tw('text-sm gap-3')}>
                             <Text>Rental Name: {booking.unit.rental.name}</Text>
                             <Text>Unit: {booking.unit.name}</Text>
-                            <Text style={tw('capitalize')}>Type: {booking.unit.rental.type}</Text>
+                            <Text style={tw('capitalize')}>Type: {booking.unit.rental.category.name}</Text>
                             <Text>Date From: {new Date(booking.start_time).toLocaleDateString('id-ID')}</Text>
                             <Text>Date To: {new Date(booking.end_time).toLocaleDateString('id-ID')}</Text>
                         </View>
@@ -104,7 +113,7 @@ export default function InvoiceTemplate({ booking }: InvoiceProps) {
                                     minimumFractionDigits: 0,
                                 }).format(booking.price)}
                             </Text>
-                            <Text>Discount: {booking.discount}%</Text>
+                            {booking.discount && <Text>Discount: {booking.discount.percentage}%</Text>}
                         </View>
                     </View>
                     {/* Total */}

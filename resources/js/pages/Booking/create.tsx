@@ -32,17 +32,13 @@ interface PageProps extends InertiaPageProps {
     unit: Unit;
     bookings: Booking[];
     errors: Record<string, string>;
-    bookingType: string;
-    monthlyLimit: number | null;
-    hasReachedLimit: boolean;
 }
 
 export default function BookingPage() {
-    const { unit, bookings, errors: pageErrors, bookingType, monthlyLimit, hasReachedLimit } = usePage<PageProps>().props;
+    const { unit, bookings, errors: pageErrors } = usePage<PageProps>().props;
     const { data, setData, post, processing, errors } = useForm({
         start_time: '',
         end_time: '',
-        booking_type: bookingType,
     });
     const [dataError, setDataError] = useState<string | null>(null);
 
@@ -96,8 +92,6 @@ export default function BookingPage() {
                     <fieldset className="fieldset w-sm rounded-box border border-base-300 bg-base-200 p-4">
                         <legend className="fieldset-legend text-xl font-semibold">Booking Form</legend>
 
-                        <input type="hidden" value={data.booking_type} />
-
                         {/* Waktu Mulai */}
                         <label className="label">Waktu Mulai</label>
                         <input
@@ -117,7 +111,6 @@ export default function BookingPage() {
                         <div className="mt-4 text-center">
                             {pageErrors.booking && <p className="text-red-400">{pageErrors.booking}</p>}
                             {dataError && <p className="text-red-400">{dataError}</p>}
-                            {hasReachedLimit && <p className="text-red-400">Kamu Sudah Mencapai Limit {monthlyLimit}x Booking untuk Member</p>}
                         </div>
 
                         <div className="flex justify-center gap-3">

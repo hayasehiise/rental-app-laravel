@@ -10,7 +10,7 @@ class Invoice extends Controller
 {
     public function download(Booking $booking)
     {
-        $booking->load(['unit', 'unit.rental', 'payment', 'user']);
+        $booking->load(['unit', 'unit.rental', 'unit.rental.category', 'payment', 'user', 'discount']);
 
         return Inertia::render('invoice', compact('booking'));
     }

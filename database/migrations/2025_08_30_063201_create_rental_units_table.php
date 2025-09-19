@@ -15,8 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('rental_id')->constrained('rentals')->cascadeOnDelete();
             $table->string('name');
-            $table->decimal('hourly_price', 15, 2);
-            $table->decimal('member_price', 15, 2)->nullable();
+            $table->decimal('price', 15, 2);
             $table->boolean('is_available')->default(true);
             $table->timestamps();
         });
