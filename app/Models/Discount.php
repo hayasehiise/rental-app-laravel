@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Discount extends Model
@@ -15,8 +16,8 @@ class Discount extends Model
         'is_member_only',
     ];
 
-    public function bookings(): HasMany
+    public function bookings(): BelongsToMany
     {
-        return $this->hasMany(Booking::class);
+        return $this->belongsToMany(Booking::class, 'booking_discount', 'discount_id', 'booking_id')->withTimestamps();
     }
 }

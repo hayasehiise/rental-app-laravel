@@ -27,6 +27,7 @@ interface Payment {
     order_id: string;
 }
 interface Discount {
+    id: number;
     name: string;
     percentage: number;
 }
@@ -35,7 +36,7 @@ interface Booking {
     start_time: string;
     end_time: string;
     price: number;
-    discount: Discount;
+    discounts: Discount[];
     final_price: number;
     unit: Unit;
     user: User;
@@ -113,7 +114,15 @@ export default function InvoiceTemplate({ booking }: InvoiceProps) {
                                     minimumFractionDigits: 0,
                                 }).format(booking.price)}
                             </Text>
-                            {booking.discount && <Text>Discount: {booking.discount.percentage}%</Text>}
+                            {booking.discounts.length > 0 ? (
+                                booking.discounts.map((d) => (
+                                    <Text key={d.id}>
+                                        Discount {d.name}: {d.percentage}%
+                                    </Text>
+                                ))
+                            ) : (
+                                <Text>No Discounts</Text>
+                            )}
                         </View>
                     </View>
                     {/* Total */}

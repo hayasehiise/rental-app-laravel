@@ -28,15 +28,18 @@ class SendBookingReminder implements ShouldQueue
      */
     public function handle(TelegramService $telegram): void
     {
-        $booking = $this->reminder->booking;
+        $reminder = BookingReminder::with(['booking.unit', 'booking.user', 'booking.payment'])->findOrFail($this->reminder->id);
+        $booking = $reminder->booking;
 
-        if ($this->reminder->sent_at) {
+        if ($reminder->sent_at) {
             return;
         }
 
         $msg = <<<HTML
         <b>Reminder Booking ⏰</b>
         ID: {$booking->payment->order_id}
+        User: {$booking->user->name}
+        Rental Unit: {$booking->unit->name}
         Customer: {$booking->user->name}
         Start: {$booking->start_time->format('d M Y H:i')}
         Status: {$booking->status}

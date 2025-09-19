@@ -29,6 +29,7 @@ interface Payment {
     order_id: string;
 }
 interface Discount {
+    id: number;
     name: string;
     percentage: number;
 }
@@ -37,7 +38,7 @@ interface Booking {
     start_time: string;
     end_time: string;
     price: number;
-    discount: Discount;
+    discounts: Discount[];
     final_price: number;
     unit: Unit;
     user: User;

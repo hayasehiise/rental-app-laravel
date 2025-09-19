@@ -23,6 +23,8 @@ interface Payment {
     transaction_status: string;
 }
 interface Discount {
+    id: number;
+    code: string;
     name: string;
     percentage: number;
 }
@@ -33,7 +35,7 @@ interface Booking {
     start_time: string;
     end_time: string;
     price: number;
-    discount: Discount;
+    discounts: Discount[];
     final_price: number;
     unit: Unit;
     payment: Payment;
@@ -98,9 +100,20 @@ export default function PaymentPage() {
                             <span className="font-semibold">Waktu Mulai : </span>
                             {new Date(booking.end_time).toLocaleString('id-ID')}
                         </p>
-                        <p>
+                        {/* <p>
                             <span className="font-semibold">Diskon : </span>
                             {booking.discount ? Number(booking.discount.percentage) : Number(0)}%
+                        </p> */}
+                        <p>
+                            <span className="font-semibold">Diskon : </span>
+                            {booking.discounts.length > 0
+                                ? booking.discounts.map((d, i) => (
+                                      <span key={d.id}>
+                                          {d.name} ({d.percentage}%)
+                                          {i < booking.discounts.length - 1 && ', '}
+                                      </span>
+                                  ))
+                                : 'Tidak ada'}
                         </p>
                         <p>
                             <span className="font-semibold">Total Harga : </span>

@@ -49,12 +49,13 @@ class Booking extends Controller
         $request->validate([
             'start_time' => ['required', 'date', 'after_or_equal:now'],
             'end_time' => ['required', 'date', 'after:start_time'],
+            'discount_code' => ['nullable', 'string'],
         ]);
 
         $user = auth()->user();
         $isMember = $user->hasRole('member');
 
-        $booking = $this->bookingService->create($request->only('start_time', 'end_time'), $unitId, $isMember);
+        $booking = $this->bookingService->create($request->only('start_time', 'end_time', 'discount_code'), $unitId, $isMember);
 
         return redirect()->route('booking.payment', $booking);
     }
@@ -73,7 +74,7 @@ class Booking extends Controller
 
     public function payment(ModelsBooking $booking)
     {
-        $booking->load(['unit', 'payment', 'user', 'discount']);
+        $booking->load(['unit', 'payment', 'user', 'discounts']);
         $snapToken = $this->bookingService->createOrGetSnapToken($booking);
         return Inertia::render('Booking/payment', compact('snapToken', 'booking'));
     }

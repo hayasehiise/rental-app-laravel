@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -42,9 +43,9 @@ class Booking extends Model
     {
         return $this->hasMany(BookingReminder::class);
     }
-    public function discount(): BelongsTo
+    public function discounts(): BelongsToMany
     {
-        return $this->belongsTo(Discount::class, 'discount_id');
+        return $this->belongsToMany(Discount::class, 'booking_discounts', 'booking_id', 'discount_id')->withTimestamps();
     }
 
     // Helpers

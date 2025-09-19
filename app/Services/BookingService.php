@@ -49,10 +49,10 @@ class BookingService
             ]);
         }
 
-        return DB::transaction(function () use ($data, $unit, $start, $end, $isMember) {
+        return DB::transaction(function () use ($data, $unit, $start, $end, $isMember, $category) {
             if ($category === 'kendaraan') {
                 // hitung harga
-                $days = max(1, $start->diffInDays($end));
+                $days = max(1, $start->diffInDays($end) + 1);
                 $basePrice = $unit->price;
                 $price = $basePrice * $days;
             } else {
@@ -62,7 +62,7 @@ class BookingService
                 $price = $basePrice * $hours;
             }
 
-            $discount = Discount::where('is_member_only', $isMember)
+            $discounts = Discount::where('is_member_only', $isMember)
                 ->where(function ($q) use ($start) {
                     $q->whereNull('start_time')->orWhere('start_time', '<=', $start);
                 })
@@ -70,22 +70,35 @@ class BookingService
                     $q->whereNull('end_time')->orWhere('end_time', '>=', $end);
                 })
                 ->orderByDesc('percentage')
-                ->first();
+                ->get();
 
-            $discountvalue = $discount ? $discount->percentage : 0;
-            $finalPrice = $price - ($price * ($discountvalue / 100));
+            // cek kode diskon tambahan
+            if ($code = data_get($data, 'discount_code')) {
+                $codeDiscount = Discount::where('code', $code)->first();
+                if ($codeDiscount) {
+                    $discounts->push($codeDiscount);
+                }
+            }
+
+            // hitung final price
+            $totalPercentage = $discounts->sum('percentage');
+            $finalPrice = $price - ($price * $totalPercentage / 100);
 
 
             $booking = Booking::create([
                 'user_id' => auth()->user()->id,
                 'rental_unit_id' => $unit->id,
-                'discount_id' => $discount?->id,
                 'start_time' => $start,
                 'end_time' => $end,
                 'price' => $price,
                 'final_price' => $finalPrice,
                 'status' => 'pending',
             ]);
+
+            // simpan ke pivot booking_discounts
+            if ($discounts->isNotEmpty()) {
+                $booking->discounts()->attach($discounts->pluck('id')->toArray());
+            }
 
             // trigger event
             event(new BookingCreated($booking));
