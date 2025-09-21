@@ -121,9 +121,6 @@ export default function Layout({ children }) {
                     </div>
                     {/* Untuk menu mobile */}
                     <div className="flex-none md:hidden">
-                        {/* <button className="btn btn-ghost">
-                            <CiMenuBurger className="text-2xl" />
-                        </button> */}
                         {/* Drawer */}
                         <div className="drawer">
                             <input id="nav-drawer" type="checkbox" className="drawer-toggle" />
@@ -135,15 +132,63 @@ export default function Layout({ children }) {
                             </div>
                             <div className="drawer-side">
                                 <label htmlFor="nav-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
-                                <ul className="menu min-h-full w-80 bg-base-200 p-4 text-base-content">
+                                <div className="flex min-h-full w-80 flex-col justify-between bg-base-200 p-4 text-base-content">
                                     {/* Sidebar content here */}
-                                    <li>
-                                        <a>Sidebar Item 1</a>
-                                    </li>
-                                    <li>
-                                        <a>Sidebar Item 2</a>
-                                    </li>
-                                </ul>
+                                    <ul className="menu">
+                                        <li>
+                                            <Link className="" href={'/'}>
+                                                <FaHome />
+                                                Home
+                                            </Link>
+                                        </li>
+                                        <div className="collapse-arrow collapse">
+                                            <input type="checkbox" />
+                                            <div className="collapse-title">Rental</div>
+                                            <div className="collapse-content space-y-3 px-10">
+                                                <Link className="flex gap-2" href={route('rental.index', { type: 'lapangan' })}>
+                                                    <MdOutlineStadium />
+                                                    Lapangan
+                                                </Link>
+                                                <Link className="flex gap-2" href={route('rental.index', { type: 'gedung' })}>
+                                                    <FaRegBuilding />
+                                                    Gedung
+                                                </Link>
+                                                <Link className="flex gap-2" href={route('rental.index', { type: 'kendaraan' })}>
+                                                    <FaCar />
+                                                    Kendaraan
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </ul>
+                                    {auth?.user ? (
+                                        <div className="collapse-arrow collapse">
+                                            <input type="checkbox" />
+                                            <div className="collapse-title flex items-center gap-3">
+                                                <div className="btn avatar avatar-placeholder btn-circle btn-ghost">
+                                                    <div className="w-10 rounded-full bg-neutral text-neutral-content">
+                                                        <span>{getInitial(auth.user.name)}</span>
+                                                    </div>
+                                                </div>
+                                                <p>{auth.user.name}</p>
+                                            </div>
+                                            <div className="collapse-content flex flex-col px-10">
+                                                <Link className="items-center" href={route('transaction.index')}>
+                                                    Transaction
+                                                </Link>
+                                                <div className="divider p-0"></div>
+                                                <a onClick={() => router.post(route('logout.user'))} className="btn btn-outline btn-error">
+                                                    Logout
+                                                </a>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <button className="btn btn-outline" onClick={() => router.get(route('login.user'))}>
+                                            <FiLogIn />
+                                            Login
+                                        </button>
+                                    )}
+                                    {/* user */}
+                                </div>
                             </div>
                         </div>
                         {/* End Drawer */}
