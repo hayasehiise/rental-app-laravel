@@ -4,30 +4,31 @@ namespace App\Http\Controllers;
 
 use App\Actions\Booking\CancelBookingAction;
 use App\Actions\Booking\CreateBookingAction;
+use App\Actions\Booking\CreateOrGetSnapTokenAction;
 use App\Actions\Booking\GetBookingCreateDataAction;
 use App\Models\Booking as ModelsBooking;
-use App\Models\BookingType;
-use App\Models\Payment;
-use App\Models\RentalUnit;
-use App\Services\BookingService;
-use Carbon\Carbon;
-use Exception;
-use Illuminate\Database\QueryException;
+// use App\Models\BookingType;
+// use App\Models\Payment;
+// use App\Models\RentalUnit;
+// use App\Services\BookingService;
+// use Carbon\Carbon;
+// use Exception;
+// use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
+// use Illuminate\Support\Facades\DB;
+// use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
-use Midtrans\Config;
-use Midtrans\Snap;
+// use Midtrans\Config;
+// use Midtrans\Snap;
 
 class Booking extends Controller
 {
-    protected BookingService $bookingService;
+    // protected BookingService $bookingService;
 
-    public function __construct(BookingService $bookingService)
-    {
-        $this->bookingService = $bookingService;
-    }
+    // public function __construct(BookingService $bookingService)
+    // {
+    //     $this->bookingService = $bookingService;
+    // }
 
     public function create(int $unitId)
     {
@@ -102,8 +103,14 @@ class Booking extends Controller
 
     public function payment(ModelsBooking $booking)
     {
-        $booking->load(['unit', 'payment', 'user', 'discounts']);
-        $snapToken = $this->bookingService->createOrGetSnapToken($booking);
+        // Sebelum laravel actions
+        // $booking->load(['unit', 'payment', 'user', 'discounts']);
+        // $snapToken = $this->bookingService->createOrGetSnapToken($booking);
+        // return Inertia::render('Booking/payment', compact('snapToken', 'booking'));
+        // =======================================
+
+        $snapToken = CreateOrGetSnapTokenAction::run($booking);
+
         return Inertia::render('Booking/payment', compact('snapToken', 'booking'));
     }
 }
