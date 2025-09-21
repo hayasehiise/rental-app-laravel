@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Booking\CancelBookingAction;
+use App\Actions\Booking\CreateBookingAction;
+use App\Actions\Booking\GetBookingCreateDataAction;
 use App\Models\Booking as ModelsBooking;
 use App\Models\BookingType;
 use App\Models\Payment;
@@ -26,48 +29,73 @@ class Booking extends Controller
         $this->bookingService = $bookingService;
     }
 
-    public function create($unitId)
+    public function create(int $unitId)
     {
-        $unit = RentalUnit::with(['image', 'rental.category'])->findOrFail($unitId);
+        // ini kalau tidak pakai laravel action
+        // $unit = RentalUnit::with(['image', 'rental.category'])->findOrFail($unitId);
 
-        $bookings = ModelsBooking::where('rental_unit_id', $unitId)
-            ->whereDate('start_time', '>=', now()->toDateString())
-            ->get();
+        // $bookings = ModelsBooking::where('rental_unit_id', $unitId)
+        //     ->whereDate('start_time', '>=', now()->toDateString())
+        //     ->get();
 
-        $user = auth()->user();
-        $isMember = $user->hasRole('member');
+        // $user = auth()->user();
+        // $isMember = $user->hasRole('member');
 
-        return Inertia::render('Booking/create', [
-            'unit' => $unit,
-            'bookings' => $bookings,
-            'isMember' => $isMember
-        ]);
+        // return Inertia::render('Booking/create', [
+        //     'unit' => $unit,
+        //     'bookings' => $bookings,
+        //     'isMember' => $isMember
+        // ]);
+        // =====================================================
+
+        $data = GetBookingCreateDataAction::run($unitId, auth()->user());
+
+        return Inertia::render('Booking/create', $data);
     }
 
     public function store(Request $request, $unitId)
     {
+        // tanpa laravel actions
+        // $request->validate([
+        //     'start_time' => ['required', 'date', 'after_or_equal:now'],
+        //     'end_time' => ['required', 'date', 'after:start_time'],
+        //     'discount_code' => ['nullable', 'string'],
+        // ]);
+
+        // $user = auth()->user();
+        // $isMember = $user->hasRole('member');
+
+        // $booking = $this->bookingService->create($request->only('start_time', 'end_time', 'discount_code'), $unitId, $isMember);
+
+        // return redirect()->route('booking.payment', $booking);
+        // ================================================================
+
         $request->validate([
             'start_time' => ['required', 'date', 'after_or_equal:now'],
             'end_time' => ['required', 'date', 'after:start_time'],
             'discount_code' => ['nullable', 'string'],
         ]);
 
-        $user = auth()->user();
-        $isMember = $user->hasRole('member');
-
-        $booking = $this->bookingService->create($request->only('start_time', 'end_time', 'discount_code'), $unitId, $isMember);
+        $booking = CreateBookingAction::run($request->only('start_time', 'end_time', 'discount_code'), $unitId, $request->user());
 
         return redirect()->route('booking.payment', $booking);
     }
+
     public function cancel(ModelsBooking $booking)
     {
-        $booking->load(['payment']);
-        if ($booking->isPending()) {
-            $booking->update(['status' => 'cancelled']);
-            $booking->payment->update([
-                'transaction_status' => 'cancelled'
-            ]);
-        }
+        // Sebelum pakai Laravel Actions
+        // $booking->load(['payment']);
+        // if ($booking->isPending()) {
+        //     $booking->update(['status' => 'cancelled']);
+        //     $booking->payment->update([
+        //         'transaction_status' => 'cancelled'
+        //     ]);
+        // }
+
+        // return redirect()->route('transaction.index')->with('success', 'Booking Dibatalkan');
+        // =====================================
+
+        CancelBookingAction::run($booking);
 
         return redirect()->route('transaction.index')->with('success', 'Booking Dibatalkan');
     }
