@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
             TestGuestSeeder::class,
             RentalCategorySeeder::class,
             RentalSeeder::class,
-            DiscountSeeder::class,
+            /* DiscountSeeder::class, */
         ]);
     }
 }
