@@ -30,6 +30,7 @@ class TransactionsTable
                     ->label('Status Transaksi')
                     ->icon(fn(string $state) => match ($state) {
                         'capture' => 'heroicon-s-check-circle',
+                        'settlement' => 'heroicon-s-check-circle',
                         'pending' => 'heroicon-s-pause-circle',
                         'cancelled' => 'heroicon-s-x-circle',
                         'deny' => 'heroicon-s-x-circle',
@@ -37,6 +38,7 @@ class TransactionsTable
                     })
                     ->color(fn(string $state) => match ($state) {
                         'capture' => 'success',
+                        'settlement' => 'success',
                         'pending' => 'warning',
                         'cancelled' => 'danger',
                         'expire' => 'danger',
@@ -45,7 +47,8 @@ class TransactionsTable
                     })
                     ->size('2xl')
                     ->tooltip(fn(string $state) => match ($state) {
-                        'capture' => 'Paid',
+                        'capture' => 'Paid Waiting Confirmation',
+                        'settlement' => 'Paid',
                         'pending' => 'Pending',
                         'cancelled' => 'Cancelled',
                         'expire' => 'Expired',

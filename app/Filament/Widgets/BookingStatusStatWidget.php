@@ -15,7 +15,7 @@ class BookingStatusStatWidget extends StatsOverviewWidget
         $now = Carbon::now();
 
         $paidActiveBookintCount = Booking::whereHas('payment', function ($query) {
-            $query->where('transaction_status', 'capture');
+            $query->whereIn('transaction_status', ['capture', 'settlement']);
         })
             ->where('status', 'paid')
             ->where('end_time', '>', $now)
