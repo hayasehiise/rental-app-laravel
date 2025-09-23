@@ -40,7 +40,7 @@ class BookingPolicy
     public function update(User $user, Booking $booking): bool
     {
         // return false;
-        return $user->hasRole('admin');
+        return $user->hasAnyRole(['admin', 'staff_admin']);
     }
 
     /**

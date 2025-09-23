@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Bookings\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -15,10 +16,10 @@ class BookingForm
             ->components([
                 Select::make('user_id')
                     ->relationship('user', 'name')
-                    ->required(),
-                TextInput::make('rental_unit_id')
                     ->required()
-                    ->numeric(),
+                    ->visible(fn() => auth()->user()->hasRole('admin')),
+                Hidden::make('rental_unit_id')
+                    ->required(),
                 DateTimePicker::make('start_time')
                     ->required(),
                 DateTimePicker::make('end_time')
@@ -26,18 +27,18 @@ class BookingForm
                 TextInput::make('price')
                     ->required()
                     ->numeric()
-                    ->prefix('$'),
-                TextInput::make('discount')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
+                    ->prefix('Rp.')
+                    ->visible(fn() => auth()->user()->hasRole('admin')),
                 TextInput::make('final_price')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->prefix('Rp.')
+                    ->visible(fn() => auth()->user()->hasRole('admin')),
                 Select::make('status')
                     ->options(['pending' => 'Pending', 'paid' => 'Paid', 'cancelled' => 'Cancelled'])
                     ->default('pending')
-                    ->required(),
+                    ->required()
+                    ->visible(fn() => auth()->user()->hasRole('admin')),
             ]);
     }
 }

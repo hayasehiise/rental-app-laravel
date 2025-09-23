@@ -29,8 +29,14 @@ class BookingObserver
             foreach ([30, 15, 5] as $minutes) {
                 $runAt = $booking->start_time->copy()->subMinutes($minutes);
 
+                // Buat reminder baru di database
+                $reminder = $booking->reminders()->create([
+                    'minutes_before' => $minutes,
+                    'schedule_at' => $runAt,
+                ]);
+
                 // Masukan job ke queue
-                SendBookingReminder::dispatch($booking)->delay($runAt);
+                SendBookingReminder::dispatch($reminder)->delay($runAt);
             }
         }
     }

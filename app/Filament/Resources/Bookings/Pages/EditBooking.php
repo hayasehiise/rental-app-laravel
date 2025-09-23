@@ -16,4 +16,9 @@ class EditBooking extends EditRecord
             DeleteAction::make(),
         ];
     }
+
+    protected function getRedirectUrl(): ?string
+    {
+        return BookingResource::getUrl('index');
+    }
 }

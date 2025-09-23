@@ -42,7 +42,6 @@ class SendBookingReminder implements ShouldQueue
         Customer: {$booking->user->name}
         Start: {$booking->start_time->format('d M Y H:i')}
         End: {$booking->end_time->format('d M Y H:i')}
-        <!-- Status: {$booking->status} -->
         HTML;
 
         $telegram->send($msg);

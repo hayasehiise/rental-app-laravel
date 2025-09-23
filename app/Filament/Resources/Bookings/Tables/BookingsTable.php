@@ -39,7 +39,7 @@ class BookingsTable
             return false;
         }
 
-        // Jika payment status bukan capture/settlement 
+        // Jika payment status bukan capture/settlement
         if (!in_array($record->payment->transaction_status, ['capture', 'settlement'])) {
             return false;
         }
@@ -207,7 +207,16 @@ class BookingsTable
                 EditAction::make()
                     ->label('')
                     ->tooltip('Edit Record')
-                    ->iconSize('lg'),
+                    ->iconSize('lg')
+                    ->visible(function (Booking $record) {
+                        $now = now();
+
+                        if ($now->greaterThanOrEqualTo($record->start_time) || $now->greaterThan($record->end_time)) {
+                            return false;
+                        }
+
+                        return true;
+                    }),
                 DeleteAction::make()
                     ->label('')
                     ->tooltip('Delete Record')

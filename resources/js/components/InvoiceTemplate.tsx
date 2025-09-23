@@ -55,7 +55,7 @@ export default function InvoiceTemplate({ booking }: InvoiceProps) {
             <Page size="LETTER" style={tw('p-10 bg-white flex flex-col')}>
                 {/* Header */}
                 <View style={tw('mb-10')}>
-                    <Text style={tw('text-4xl font-bold leading-none')}>Brand</Text>
+                    <Text style={tw('text-4xl font-bold leading-none')}>Mutiara Rental</Text>
                     <Text style={tw('text-sm text-gray-600')}>Segala Kebutuhan, Satu Tempat</Text>
                 </View>
 
