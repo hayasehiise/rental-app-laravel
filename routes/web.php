@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\FrontendAuth;
+use App\Http\Controllers\Auth\PasswordReset;
 use App\Http\Controllers\Booking;
 use App\Http\Controllers\Homepage;
 use App\Http\Controllers\Invoice;
@@ -19,6 +20,12 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/register', [FrontendAuth::class, 'showRegister'])->name('register.user');
     Route::post('/register', [FrontendAuth::class, 'register'])->name('register.store');
+
+    Route::get('/forgot-password', [PasswordReset::class, 'requestForm'])->name('password.request');
+    Route::post('/forgot-password', [PasswordReset::class, 'sendResetLink'])->name('password.email');
+
+    Route::get('/reset-password', [PasswordReset::class, 'resetForm'])->name('password.reset');
+    Route::post('/reset-password', [PasswordReset::class, 'resetPassword'])->name('password.update');
 });
 
 Route::middleware(['isUser'])->group(function () {
