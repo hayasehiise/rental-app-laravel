@@ -10,8 +10,11 @@ interface RegisterError {
     password?: string;
     password_confirmation?: string;
 }
+interface FlashProps {
+    success: string;
+}
 export default function RegisterPage() {
-    const { flash } = usePage().props;
+    const { flash } = usePage<{ flash: FlashProps }>().props;
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         email: '',
@@ -68,6 +71,8 @@ export default function RegisterPage() {
         post(route('register.store'));
     };
 
+    console.error(errors);
+
     return (
         <div className="mt-20 flex max-w-full justify-center p-6">
             <form onSubmit={submit} className="space-y-4">
@@ -75,23 +80,6 @@ export default function RegisterPage() {
                     <legend className="fieldset-legend text-2xl">Register Account</legend>
 
                     {flash?.success && <div className="mb-4 rounded bg-green-100 p-3 text-green-800">{flash.success}</div>}
-                    {/* Client-side errors */}
-                    {/* {Object.keys(clientError).length > 0 && (
-                        <div className="mb-4 text-red-600">
-                            {Object.values(clientError).map((err, i) => (
-                                <p key={i}>{err}</p>
-                            ))}
-                        </div>
-                    )} */}
-
-                    {/* Server-side errors */}
-                    {/* {errors && Object.keys(errors).length > 0 && (
-                        <div className="mb-4 text-red-600">
-                            {Object.values(errors).map((err, i) => (
-                                <p key={i}>{err}</p>
-                            ))}
-                        </div>
-                    )} */}
 
                     <label className="fieldset-label">Nama Lengkap</label>
                     <label className={`input w-full ${clientError.name && 'input-error'}`}>

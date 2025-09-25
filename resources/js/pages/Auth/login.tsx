@@ -1,5 +1,6 @@
-import { Link, useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { Link, useForm, usePage } from '@inertiajs/react';
+import gsap from 'gsap';
+import { useEffect, useRef, useState } from 'react';
 import { HiOutlineLogin } from 'react-icons/hi';
 import { IoCaretBackOutline, IoClipboard, IoEyeOff, IoEyeOutline } from 'react-icons/io5';
 import { z } from 'zod';
@@ -8,18 +9,36 @@ interface LoginError {
     email?: string;
     password?: string;
 }
+interface FlashProps {
+    success: string;
+}
 const loginSchema = z.object({
     email: z.email('Masukan Email Yang Benar'),
     password: z.string().min(6, 'Minimal Password 6 karakter'),
 });
 export default function LoginPage() {
+    const { flash } = usePage<{ flash: FlashProps }>().props;
     const { post, data, setData, processing, errors } = useForm({
         email: '',
         password: '',
     });
     const [showPassword, setShowPassword] = useState<boolean>(false);
-
     const [clientErrors, setClientErrors] = useState<LoginError>({});
+    const statusRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        if (flash.success && statusRef.current) {
+            const el = statusRef.current;
+            gsap.fromTo(el, { y: 100, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' });
+
+            // auto hide setelah 3 detik
+            const timer = setTimeout(() => {
+                gsap.to(el, { y: 100, opacity: 0, duration: 0.6, ease: 'power3.in' });
+            }, 3000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [flash.success]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -49,6 +68,11 @@ export default function LoginPage() {
 
     return (
         <div className="flex h-screen flex-col items-center justify-center">
+            {flash.success && (
+                <div ref={statusRef} className="toast-end toast">
+                    <div className="alert alert-success">{flash.success}</div>
+                </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-4">
                 <fieldset className="fieldset w-xs rounded-box border border-base-300 bg-base-200 p-4">
                     <legend className="fieldset-legend text-xl">Login</legend>
