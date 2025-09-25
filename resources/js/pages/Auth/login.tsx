@@ -73,9 +73,9 @@ export default function LoginPage() {
                             onBlur={() => handleBlur('password')}
                         />
                         {!showPassword ? (
-                            <IoEyeOutline className="text-xl cursor-pointer" onClick={() => setShowPassword(true)} />
+                            <IoEyeOutline className="cursor-pointer text-xl" onClick={() => setShowPassword(true)} />
                         ) : (
-                            <IoEyeOff className="text-xl cursor-pointer" onClick={() => setShowPassword(false)} />
+                            <IoEyeOff className="cursor-pointer text-xl" onClick={() => setShowPassword(false)} />
                         )}
                     </label>
                     {clientErrors.password && <p className="text-red-500">{clientErrors.password}</p>}
@@ -93,7 +93,13 @@ export default function LoginPage() {
                     </div>
                 </fieldset>
             </form>
-            <Link href={route('home')} className="btn mt-4 btn-ghost">
+            <p className="mt-2">
+                Forgot your password?{' '}
+                <Link className="font-bold decoration-wavy hover:underline" href={route('password.request')}>
+                    Click Here
+                </Link>
+            </p>
+            <Link href={route('home')} className="btn mt-2 btn-ghost">
                 <IoCaretBackOutline className="text-xl" />
                 Go Back
             </Link>

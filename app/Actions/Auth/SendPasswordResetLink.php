@@ -26,7 +26,6 @@ class SendPasswordResetLink
             ]
         );
 
-        // $url = url('/reset-password?token=' . $token . '&email=' . urlencode($email));
         $url = url(route('password.reset', [
             'token' => $token,
             'email' => urlencode($email),

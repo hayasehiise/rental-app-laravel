@@ -10,11 +10,15 @@ use App\Http\Controllers\Rental;
 use App\Http\Controllers\Transaction;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [Homepage::class, 'index'])->name('home');
-Route::get('/rental', [Rental::class, 'index'])->name('rental.index');
-Route::get('/rental/{id}', [Rental::class, 'list'])->name('rental.list');
+// Route::get('/', [Homepage::class, 'index'])->name('home');
+// Route::get('/rental', [Rental::class, 'index'])->name('rental.index');
+// Route::get('/rental/{id}', [Rental::class, 'list'])->name('rental.list');
 
 Route::middleware('guest')->group(function () {
+    Route::get('/', [Homepage::class, 'index'])->name('home');
+    Route::get('/rental', [Rental::class, 'index'])->name('rental.index');
+    Route::get('/rental/{id}', [Rental::class, 'list'])->name('rental.list');
+
     Route::get('/login', [FrontendAuth::class, 'showLogin'])->name('login.user');
     Route::post('/login', [FrontendAuth::class, 'login']);
 
