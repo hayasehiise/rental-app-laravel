@@ -14,7 +14,6 @@ class RentalUnit extends Model
     protected $fillable = [
         'rental_id',
         'name',
-        'price',
         'is_available',
     ];
 
@@ -30,5 +29,17 @@ class RentalUnit extends Model
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);
+    }
+    public function prices(): HasMany
+    {
+        return $this->hasMany(RentalUnitPrice::class, 'rental_unit_id');
+    }
+
+    // helper method
+    public function getPriceFor(string $type): ?float
+    {
+        return $this->prices()
+            ->where('type', $type)
+            ->value('price');
     }
 }

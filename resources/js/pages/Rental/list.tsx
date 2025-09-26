@@ -12,12 +12,17 @@ interface RentalUnitImage {
     id: number;
     path: string;
 }
+interface RentalUnitPrice {
+    id: number;
+    type: string;
+    price: number;
+}
 interface RentalUnit {
     id: number;
     name: string;
-    price: number;
     is_available: boolean;
     image: RentalUnitImage[];
+    prices: RentalUnitPrice[];
 }
 
 interface RentalCategory {
@@ -71,7 +76,14 @@ function UnitCard({ unit }: { unit: RentalUnit }) {
                 <h2 className="card-title">
                     {unit.name} {unit.is_available ? <FaCheckCircle className="fill-success" /> : <FaTimesCircle className="fill-error" />}
                 </h2>
-                <p>{formatRupiah(unit.price)}</p>
+                {/* <p>{formatRupiah(unit.price)}</p> */}
+                {unit.prices.map((p) => (
+                    <p key={p.id} className="text-sm">
+                        {p.type === 'hourly' && `Per Jam: ${formatRupiah(p.price)}`}
+                        {p.type === 'daily' && `Per Hari: ${formatRupiah(p.price)}`}
+                        {p.type === 'monthly' && `Per Bulan: ${formatRupiah(p.price)}`}
+                    </p>
+                ))}
                 <div className="card-actions justify-end">
                     <Link href={route('booking.index', unit.id)} className="btn btn-outline">
                         <FaBookmark />

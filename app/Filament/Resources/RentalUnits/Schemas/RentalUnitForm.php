@@ -19,11 +19,6 @@ class RentalUnitForm
                 TextInput::make('name')
                     ->label('Nama Unit')
                     ->required(),
-                TextInput::make('price')
-                    ->label('Harga Perjam')
-                    ->numeric()
-                    ->prefix('Rp')
-                    ->required(),
                 Toggle::make('is_available')
                     ->label('Tersedia')
                     ->default(true),

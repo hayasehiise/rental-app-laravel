@@ -9,10 +9,10 @@ class CreateRentalUnit extends CreateRecord
 {
     protected static string $resource = RentalUnitResource::class;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('index', [
-            'rental_id' => $this->record->rental_id,
-        ]);
-    }
+    // protected function getRedirectUrl(): string
+    // {
+    //     return $this->getResource()::getUrl('index', [
+    //         'rental_id' => $this->record->rental_id,
+    //     ]);
+    // }
 }

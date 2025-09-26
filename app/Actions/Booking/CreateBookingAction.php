@@ -18,7 +18,7 @@ class CreateBookingAction
 
     public function handle(array $data, int $unitId, User $user): Booking
     {
-        $unit = RentalUnit::with(['rental.category'])->findOrFail($unitId);
+        $unit = RentalUnit::with(['rental.category', 'prices'])->findOrFail($unitId);
 
         $start = Carbon::parse($data['start_time']);
         $end = Carbon::parse($data['end_time']);
@@ -54,16 +54,47 @@ class CreateBookingAction
 
         //return DB Transaction
         return DB::transaction(function () use ($data, $unit, $start, $end, $isMember, $category, $user) {
-            if ($category === 'kendaraan') {
-                // hitung harga
-                $days = max(1, $start->diffInDays($end) + 1);
-                $basePrice = $unit->price;
-                $price = $basePrice * $days;
+            $prices = $unit->prices;
+            $hourlyPrice = $prices->firstWhere('type', 'hourly')->price ?? 0;
+            $dailyPrice = $prices->firstWhere('type', 'daily')->price ?? $hourlyPrice;
+            $monthlyPrice = $prices->firstWhere('type', 'monthly')->price ?? $dailyPrice;
+
+            if (in_array($category, ['lapangan', 'gedung'])) {
+                $diffDays = $start->floatDiffInDays($end);
+                $diffMinutes = $start->diffInMinutes($end);
+
+
+                if ($diffDays < 1) {
+                    // hourly
+                    $hour = max(1, ceil($diffMinutes / 60));
+                    $price = $hourlyPrice * $hour;
+                } elseif ($diffDays >= 1 && ($diffDays < 30 || $start->format('Y-m' != $end->format('Y-m')))) {
+                    // daily
+                    $day = max(1, ceil($diffDays) + 1);
+                    $price = $dailyPrice * $day;
+                } else {
+                    // monthly, fallback ke daily jika monthly === daily
+                    // monthly jika ada monthlyPrice
+                    if ($monthlyPrice > $dailyPrice) {
+                        $months = (int) ceil($diffDays / 30) + 1;
+                        $months = max(1, $months);
+                        $price = $monthlyPrice * $months;
+                    } else {
+                        // fallback ke daily jika monthlyPrice tidak ada
+                        $days = max(1, ceil($diffDays) + 1);
+                        $price = $dailyPrice * $days;
+                    }
+                }
             } else {
-                // hitung harga
-                $hours = max(1, $start->diffInHours($end));
-                $basePrice = $unit->price;
-                $price = $basePrice * $hours;
+                // kendaraan
+                if ($monthlyPrice > $dailyPrice && $diffDays >= 30) {
+                    $months = (int) ceil($diffDays / 30) + 1;
+                    $months = max(1, $months);
+                    $price = $monthlyPrice * $months;
+                } else {
+                    $days = max(1, ceil($diffDays) + 1);
+                    $price = $dailyPrice * $days;
+                }
             }
 
             $discounts = Discount::where('is_member_only', $isMember)

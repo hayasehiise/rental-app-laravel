@@ -21,10 +21,6 @@ class RentalUnitsTable
                 TextColumn::make('name')
                     ->label('Nama Unit')
                     ->searchable(),
-                TextColumn::make('price')
-                    ->label('Harga')
-                    ->formatStateUsing(fn($state) => 'Rp' . number_format($state, 0, ',', '.'))
-                    ->sortable(),
                 IconColumn::make('is_available')
                     ->label('Tersedia')
                     ->icon(fn(bool $state) => match ($state) {
@@ -36,9 +32,9 @@ class RentalUnitsTable
             ->filters([
                 //
             ])
-            ->recordUrl(fn($record) => RentalUnitImageResource::getUrl('index', [
-                'rental_unit_id' => $record->id
-            ]))
+            // ->recordUrl(fn($record) => RentalUnitImageResource::getUrl('index', [
+            //     'rental_unit_id' => $record->id
+            // ]))
             ->recordActions([
                 Action::make('manageImages')
                     ->label('Manage Images')

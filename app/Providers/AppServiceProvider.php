@@ -8,6 +8,7 @@ use App\Models\Rental;
 use App\Models\RentalCategory;
 use App\Models\RentalImage;
 use App\Models\RentalUnit;
+use App\Models\RentalUnitPrice;
 use App\Models\User;
 use App\Observers\BookingObserver;
 use App\Policies\Admin\AdminUserPolicy;
@@ -16,6 +17,7 @@ use App\Policies\Admin\RentalCategoryPolicy;
 use App\Policies\Admin\RentalImagePolicy;
 use App\Policies\Admin\RentalPolicy;
 use App\Policies\Admin\RentalUnitPolicy;
+use App\Policies\Admin\RentalUnitPricePolicy;
 use App\Policies\Admin\TransactionPolicy;
 use App\Services\TelegramService;
 use Illuminate\Support\Facades\Auth;
@@ -56,6 +58,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(RentalUnit::class, RentalUnitPolicy::class);
         Gate::policy(RentalImage::class, RentalImagePolicy::class);
         Gate::policy(RentalCategory::class, RentalCategoryPolicy::class);
+        Gate::policy(RentalUnitPrice::class, RentalUnitPricePolicy::class);
         Gate::policy(User::class, AdminUserPolicy::class);
 
         Booking::observe(BookingObserver::class);

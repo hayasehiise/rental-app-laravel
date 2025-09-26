@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rental_units', function (Blueprint $table) {
+        Schema::create('rental_unit_prices', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('rental_id')->constrained('rentals')->cascadeOnDelete();
-            $table->string('name');
-            $table->boolean('is_available')->default(true);
+            $table->foreignId('rental_unit_id')->constrained('rental_units')->cascadeOnDelete();
+            $table->string('type');
+            $table->decimal('price', 15, 2);
             $table->timestamps();
+
+            $table->unique(['rental_unit_id', 'type']); // Tipa Unit hanya bisa punya 1 tipe harga
         });
     }
 
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rental_units');
+        Schema::dropIfExists('rental_unit_prices');
     }
 };

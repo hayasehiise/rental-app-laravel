@@ -80,23 +80,19 @@ export default function RentalIndex() {
         setLoading(true);
         const params: Record<string, any> = { page: page + 1 };
         if (queryType) params.type = queryType;
-        router.get(
-            route('rental.index'),
-            params,
-            {
-                preserveScroll: true,
-                preserveState: true,
-                replace: true,
-                only: ['rentals'],
-                onSuccess: (res) => {
-                    const newRentals = (res.props as any).rentals as PaginatedRentals;
-                    setItem((prev) => [...prev, ...newRentals.data]);
-                    setPage(newRentals.current_page);
-                    setLastPage(newRentals.last_page);
-                },
-                onFinish: () => setLoading(false),
+        router.get(route('rental.index'), params, {
+            preserveScroll: true,
+            preserveState: true,
+            replace: true,
+            only: ['rentals'],
+            onSuccess: (res) => {
+                const newRentals = (res.props as any).rentals as PaginatedRentals;
+                setItem((prev) => [...prev, ...newRentals.data]);
+                setPage(newRentals.current_page);
+                setLastPage(newRentals.last_page);
             },
-        );
+            onFinish: () => setLoading(false),
+        });
     }
 
     // infinite scroll

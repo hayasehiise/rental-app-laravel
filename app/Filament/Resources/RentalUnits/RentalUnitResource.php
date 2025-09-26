@@ -5,6 +5,7 @@ namespace App\Filament\Resources\RentalUnits;
 use App\Filament\Resources\RentalUnits\Pages\CreateRentalUnit;
 use App\Filament\Resources\RentalUnits\Pages\EditRentalUnit;
 use App\Filament\Resources\RentalUnits\Pages\ListRentalUnits;
+use App\Filament\Resources\RentalUnits\RelationManagers\PricesRelationManager;
 use App\Filament\Resources\RentalUnits\Schemas\RentalUnitForm;
 use App\Filament\Resources\RentalUnits\Tables\RentalUnitsTable;
 use App\Models\RentalUnit;
@@ -51,7 +52,7 @@ class RentalUnitResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            PricesRelationManager::class,
         ];
     }
 

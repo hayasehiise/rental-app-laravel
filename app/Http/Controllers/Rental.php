@@ -23,9 +23,9 @@ class Rental extends Controller
 
     public function list($id)
     {
-        $rental = ModelsRental::with('category')->findOrFail($id);
+        $rental = ModelsRental::with(['category'])->findOrFail($id);
         $units = $rental->units()
-            ->with('image')
+            ->with(['image', 'prices'])
             ->paginate(10);
 
         return Inertia::render('Rental/list', compact('rental', 'units'));
