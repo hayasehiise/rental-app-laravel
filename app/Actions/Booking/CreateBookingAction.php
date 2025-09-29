@@ -22,8 +22,7 @@ class CreateBookingAction
 
         $start = Carbon::parse($data['start_time']);
         $end = Carbon::parse($data['end_time']);
-
-        $isMember = $user->hasRole('member');
+        $isMember = $data['member'];
 
         // Validasi Sabtu
         $category = $unit->rental->category->slug;
@@ -54,89 +53,37 @@ class CreateBookingAction
 
         //return DB Transaction
         return DB::transaction(function () use ($data, $unit, $start, $end, $isMember, $category, $user) {
-            $prices = $unit->prices;
-            $hourlyPrice = $prices->firstWhere('type', 'hourly')->price ?? 0;
-            $dailyPrice = $prices->firstWhere('type', 'daily')->price ?? $hourlyPrice;
-            $monthlyPrice = $prices->firstWhere('type', 'monthly')->price ?? $dailyPrice;
+            if ($category === 'lapangan') {
+                $lapanganPrice = $unit->lapanganPrice;
 
-            if (in_array($category, ['lapangan', 'gedung'])) {
-                $diffDays = $start->floatDiffInDays($end);
-                $diffMinutes = $start->diffInMinutes($end);
-
-
-                if ($diffDays < 1) {
-                    // hourly
-                    $hour = max(1, ceil($diffMinutes / 60));
-                    $price = $hourlyPrice * $hour;
-                } elseif ($diffDays >= 1 && ($diffDays < 30 || $start->format('Y-m' != $end->format('Y-m')))) {
-                    // daily
-                    $day = max(1, ceil($diffDays) + 1);
-                    $price = $dailyPrice * $day;
+                if (!$isMember) {
+                    $diffMinutes = $start->diffInMinutes($end);
+                    $hours = max(1, ceil($diffMinutes / 60));
+                    $price = $lapanganPrice->guest_price * $hours;
+                    $finalPrice = $price;
                 } else {
-                    // monthly, fallback ke daily jika monthly === daily
-                    // monthly jika ada monthlyPrice
-                    if ($monthlyPrice > $dailyPrice) {
-                        $months = (int) ceil($diffDays / 30) + 1;
-                        $months = max(1, $months);
-                        $price = $monthlyPrice * $months;
-                    } else {
-                        // fallback ke daily jika monthlyPrice tidak ada
-                        $days = max(1, ceil($diffDays) + 1);
-                        $price = $dailyPrice * $days;
-                    }
+                    $price = $lapanganPrice->member_price;
+                    $finalPrice = $price;
                 }
-            } else {
-                // kendaraan
-                if ($monthlyPrice > $dailyPrice && $diffDays >= 30) {
-                    $months = (int) ceil($diffDays / 30) + 1;
-                    $months = max(1, $months);
-                    $price = $monthlyPrice * $months;
-                } else {
-                    $days = max(1, ceil($diffDays) + 1);
-                    $price = $dailyPrice * $days;
-                }
-            }
 
-            $discounts = Discount::where('is_member_only', $isMember)
-                ->where(function ($q) use ($start) {
-                    $q->whereNull('start_time')->orWhere('start_time', '<=', $start);
-                })
-                ->where(function ($q) use ($end) {
-                    $q->whereNull('end_time')->orWhere('end_time', '>=', $end);
-                })
-                ->orderByDesc('percentage')
-                ->get();
+                $booking = Booking::create([
+                    'user_id' => $user->id,
+                    'rental_unit_id' => $unit->id,
+                    'start_time' => $start,
+                    'end_time' => $end,
+                    'price' => $price,
+                    'final_price' => $finalPrice,
+                    'status' => 'pending',
+                ]);
 
-            // cek kode diskon tambahan
-            if ($code = data_get($data, 'discount_code')) {
-                $codeDiscount = Discount::where('code', $code)->first();
-                if ($codeDiscount) {
-                    $discounts->push($codeDiscount);
+                // trigger event
+                event(new BookingCreated($booking));
+
+                if ($isMember) {
+                    $memberQuota = $lapanganPrice->member_quota;
+                    $currentStart = $start->copy();
                 }
             }
-
-            // hitung final price
-            $totalPercentage = $discounts->sum('percentage');
-            $finalPrice = $price - ($price * $totalPercentage / 100);
-
-
-            $booking = Booking::create([
-                'user_id' => $user->id,
-                'rental_unit_id' => $unit->id,
-                'start_time' => $start,
-                'end_time' => $end,
-                'price' => $price,
-                'final_price' => $finalPrice,
-                'status' => 'pending',
-            ]);
-
-            // simpan ke pivot booking_discounts
-            if ($discounts->isNotEmpty()) {
-                $booking->discounts()->attach($discounts->pluck('id')->toArray());
-            }
-
-            // trigger event
-            event(new BookingCreated($booking));
 
             return $booking;
         });

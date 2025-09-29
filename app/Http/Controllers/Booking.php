@@ -14,7 +14,7 @@ class Booking extends Controller
 {
     public function create(int $unitId)
     {
-        $data = GetBookingCreateDataAction::run($unitId, auth()->user());
+        $data = GetBookingCreateDataAction::run($unitId);
 
         return Inertia::render('Booking/create', $data);
     }

@@ -26,6 +26,20 @@ interface Unit {
     rental: {
         category: RentalCategory;
     };
+    lapanganPrice?: {
+        guest_price: number;
+        member_price: number;
+        member_quota: number;
+    };
+    gedungPrice?: {
+        type: string;
+        pax?: number;
+        per_day?: number;
+        price: number;
+    };
+    kendaraan?: {
+        price: number;
+    };
 }
 
 interface PageProps extends InertiaPageProps {
@@ -39,6 +53,7 @@ export default function BookingPage() {
     const { data, setData, post, processing, errors } = useForm({
         start_time: '',
         end_time: '',
+        member: false,
     });
     const [dataError, setDataError] = useState<string | null>(null);
 
@@ -48,10 +63,6 @@ export default function BookingPage() {
             return bookings.some((b) => {
                 const bookedStart = new Date(b.start_time).getTime();
                 const bookedEnd = new Date(b.end_time).getTime();
-                console.log('B start' + bookedStart);
-                console.log('B end ' + bookedEnd);
-                console.log('start' + start.getTime());
-                console.log('end' + end.getTime());
                 return start.getTime() < bookedEnd && end.getTime() > bookedStart && ['pending', 'paid'].includes(b.status);
             });
         },
@@ -106,6 +117,18 @@ export default function BookingPage() {
                         <label className="label">Waktu Selesai</label>
                         <input type="datetime-local" value={data.end_time} onChange={(e) => setData('end_time', e.target.value)} className="input" />
                         {errors.end_time && <p className="text-red-500">{errors.end_time}</p>}
+
+                        {unit.rental.category.slug === 'lapangan' && (
+                            <label className="label">
+                                <input
+                                    type="checkbox"
+                                    checked={data.member}
+                                    className="checkbox"
+                                    onChange={(e) => setData('member', e.target.checked)}
+                                />
+                                Member Booking
+                            </label>
+                        )}
 
                         {/* Errors */}
                         <div className="mt-4 text-center">

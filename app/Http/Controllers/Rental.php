@@ -25,8 +25,49 @@ class Rental extends Controller
     {
         $rental = ModelsRental::with(['category'])->findOrFail($id);
         $units = $rental->units()
-            ->with(['image', 'prices'])
+            ->with(['image', 'lapanganPrice', 'gedungPrice', 'kendaraanPrice'])
             ->paginate(10);
+
+
+        $units->getCollection()->transform(function ($unit) {
+            $prices = [];
+
+            switch ($unit->rental->category->slug) {
+                case 'lapangan':
+                    $prices = [
+                        [
+                            'label' => 'Guest',
+                            'price' => $unit->lapanganPrice?->guest_price ?? 0,
+                        ],
+                        [
+                            'label' => 'Member',
+                            'price' => $unit->lapanganPrice?->member_price ?? 0,
+                        ],
+                    ];
+                    break;
+
+                case 'gedung':
+                    $prices = [
+                        [
+                            'label' => $unit->gedungPrice?->type === 'pax' ? 'Per PAX' : 'Per Hari',
+                            'price' => $unit->gedungPrice?->price ?? 0,
+                        ],
+                    ];
+                    break;
+
+                case 'kendaraan':
+                    $prices = [
+                        [
+                            'label' => 'Harga',
+                            'price' => $unit->kendaraanPrice?->price ?? 0,
+                        ],
+                    ];
+                    break;
+            }
+
+            $unit->formattedPrices = $prices;
+            return $unit;
+        });
 
         return Inertia::render('Rental/list', compact('rental', 'units'));
     }
