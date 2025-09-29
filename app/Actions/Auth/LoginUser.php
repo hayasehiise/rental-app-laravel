@@ -18,20 +18,22 @@ class LoginUser
             'password' => ['required', 'min:6', 'string'],
         ]);
 
+        // cek credentials
         if (!Auth::attempt($validated)) {
-            $user = Auth::user();
-
-            if (!$user->verify->verified_status) {
-                Auth::logout();
-                throw new Exception('Akun belum terverifikasi');
-            }
-
-            if (!$user->hasAnyRole(['guest', 'member'])) {
-                Auth::logout();
-                throw new Exception('Akun bukan untuk user login');
-            }
-
             return false;
+        }
+
+        $user = Auth::user();
+        // cek verified
+        if (!$user->verify->verified_status) {
+            Auth::logout();
+            throw new Exception('Akun belum terverifikasi');
+        }
+
+        // cek role
+        if (!$user->hasAnyRole(['guest', 'member'])) {
+            Auth::logout();
+            throw new Exception('Akun bukan untuk user login');
         }
 
         $request->session()->regenerate();
