@@ -1,25 +1,20 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Price;
 
+use App\Models\RentalUnit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class RentalUnitPrice extends Model
+class KendaraanPrice extends Model
 {
     protected $fillable = [
         'rental_unit_id',
-        'priceable_type',
-        'priceable_id',
+        'price',
     ];
 
     public function unit(): BelongsTo
     {
         return $this->belongsTo(RentalUnit::class, 'rental_unit_id');
-    }
-    public function priceable(): MorphTo
-    {
-        return $this->morphTo();
     }
 }

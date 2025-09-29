@@ -12,9 +12,11 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\RentalUnits\Pages\EditRentalUnit;
 use App\Filament\Resources\RentalUnits\Pages\ListRentalUnits;
 use App\Filament\Resources\RentalUnits\Pages\CreateRentalUnit;
+use App\Filament\Resources\RentalUnits\RelationManagers\GedungPriceRelationManager;
+use App\Filament\Resources\RentalUnits\RelationManagers\KendaraanPriceRelationManager;
+use App\Filament\Resources\RentalUnits\RelationManagers\LapanganPriceRelationManager;
 use App\Filament\Resources\RentalUnits\Schemas\RentalUnitForm;
 use App\Filament\Resources\RentalUnits\Tables\RentalUnitsTable;
-use App\Filament\Resources\RentalUnits\RelationManagers\PricesRelationManager;
 
 class RentalUnitResource extends Resource
 {
@@ -52,7 +54,9 @@ class RentalUnitResource extends Resource
     public static function getRelations(): array
     {
         return [
-            PricesRelationManager::class,
+            LapanganPriceRelationManager::class,
+            GedungPriceRelationManager::class,
+            KendaraanPriceRelationManager::class,
         ];
     }
 

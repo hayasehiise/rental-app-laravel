@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rental_unit_prices', function (Blueprint $table) {
+        Schema::create('gedung_prices', function (Blueprint $table) {
             $table->id();
             $table->foreignId('rental_unit_id')->constrained('rental_units')->cascadeOnDelete();
-            $table->morphs('priceable'); // priceable_type + priceable_id
+            $table->string('type')->default('day'); // Nanti isi PAX, atau DAY
+            $table->integer('pax')->nullable();
+            $table->integer('per_day')->nullable();
+            $table->decimal('price', 15, 2);
             $table->timestamps();
         });
     }
@@ -24,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rental_unit_prices');
+        Schema::dropIfExists('gedung_prices');
     }
 };

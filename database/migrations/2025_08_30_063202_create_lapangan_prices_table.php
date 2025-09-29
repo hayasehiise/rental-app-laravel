@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('gedung_prices', function (Blueprint $table) {
+        Schema::create('lapangan_prices', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['pax', 'day']);
-            $table->unsignedInteger('pax')->nullable();
-            $table->unsignedInteger('day_number')->nullable();
-            $table->decimal('price', 15, 2);
+            $table->foreignId('rental_unit_id')->constrained('rental_units')->cascadeOnDelete();
+            $table->decimal('guest_price', 15, 2);
+            $table->decimal('member_price', 15, 2);
+            $table->integer('member_quota')->default(4);
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('gedung_prices');
+        Schema::dropIfExists('lapangan_prices');
     }
 };
