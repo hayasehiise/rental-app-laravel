@@ -2,19 +2,19 @@
 
 namespace App\Filament\Resources\RentalUnits;
 
-use App\Filament\Resources\RentalUnits\Pages\CreateRentalUnit;
+use BackedEnum;
+use App\Models\RentalUnit;
+use Filament\Tables\Table;
+use Filament\Schemas\Schema;
+use Filament\Resources\Resource;
+use Filament\Support\Icons\Heroicon;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\RentalUnits\Pages\EditRentalUnit;
 use App\Filament\Resources\RentalUnits\Pages\ListRentalUnits;
-use App\Filament\Resources\RentalUnits\RelationManagers\PricesRelationManager;
+use App\Filament\Resources\RentalUnits\Pages\CreateRentalUnit;
 use App\Filament\Resources\RentalUnits\Schemas\RentalUnitForm;
 use App\Filament\Resources\RentalUnits\Tables\RentalUnitsTable;
-use App\Models\RentalUnit;
-use BackedEnum;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\RentalUnits\RelationManagers\PricesRelationManager;
 
 class RentalUnitResource extends Resource
 {

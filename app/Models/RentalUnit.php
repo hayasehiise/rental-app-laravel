@@ -34,12 +34,4 @@ class RentalUnit extends Model
     {
         return $this->hasMany(RentalUnitPrice::class, 'rental_unit_id');
     }
-
-    // helper method
-    public function getPriceFor(string $type): ?float
-    {
-        return $this->prices()
-            ->where('type', $type)
-            ->value('price');
-    }
 }

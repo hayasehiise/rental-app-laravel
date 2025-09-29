@@ -32,9 +32,9 @@ class RentalUnitsTable
             ->filters([
                 //
             ])
-            // ->recordUrl(fn($record) => RentalUnitImageResource::getUrl('index', [
-            //     'rental_unit_id' => $record->id
-            // ]))
+            ->recordUrl(fn($record) => RentalUnitImageResource::getUrl('index', [
+                'rental_unit_id' => $record->id
+            ]))
             ->recordActions([
                 Action::make('manageImages')
                     ->label('Manage Images')
