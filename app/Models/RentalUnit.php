@@ -38,9 +38,9 @@ class RentalUnit extends Model
     {
         return $this->hasOne(LapanganPrice::class);
     }
-    public function gedungPrice(): HasOne
+    public function gedungPrice(): HasMany
     {
-        return $this->hasOne(GedungPrice::class);
+        return $this->hasMany(GedungPrice::class);
     }
     public function kendaraanPrice(): HasOne
     {

@@ -47,12 +47,10 @@ class Rental extends Controller
                     break;
 
                 case 'gedung':
-                    $prices = [
-                        [
-                            'label' => $unit->gedungPrice?->type === 'pax' ? 'Per PAX' : 'Per Hari',
-                            'price' => $unit->gedungPrice?->price ?? 0,
-                        ],
-                    ];
+                    $prices = $unit->gedungPrice->map(fn($gp) => [
+                        'label' => $gp->type === 'pax' ? 'Per PAX' : 'Per Hari',
+                        'price' => $gp->price,
+                    ])->toArray();
                     break;
 
                 case 'kendaraan':
