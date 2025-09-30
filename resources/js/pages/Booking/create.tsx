@@ -92,7 +92,9 @@ export default function BookingPage() {
 
         if (dataError) return;
 
-        post(route('booking.store', unit.id));
+        console.log(data);
+
+        post(route('booking.store', unit.id), {});
     }
 
     return (
@@ -103,31 +105,65 @@ export default function BookingPage() {
                     <fieldset className="fieldset w-sm rounded-box border border-base-300 bg-base-200 p-4">
                         <legend className="fieldset-legend text-xl font-semibold">Booking Form</legend>
 
-                        {/* Waktu Mulai */}
-                        <label className="label">Waktu Mulai</label>
-                        <input
-                            type="datetime-local"
-                            value={data.start_time}
-                            onChange={(e) => setData('start_time', e.target.value)}
-                            className="input"
-                        />
-                        {errors.start_time && <p className="text-red-500">{errors.start_time}</p>}
-
-                        {/* Waktu Selesai */}
-                        <label className="label">Waktu Selesai</label>
-                        <input type="datetime-local" value={data.end_time} onChange={(e) => setData('end_time', e.target.value)} className="input" />
-                        {errors.end_time && <p className="text-red-500">{errors.end_time}</p>}
-
                         {unit.rental.category.slug === 'lapangan' && (
-                            <label className="label">
+                            <>
+                                <label className="label">
+                                    <input
+                                        type="checkbox"
+                                        checked={data.member}
+                                        className="checkbox"
+                                        onChange={(e) => setData('member', e.target.checked)}
+                                    />
+                                    Member Booking
+                                </label>
+                                {/* Waktu Mulai */}
+                                <label className="label">Waktu Mulai</label>
                                 <input
-                                    type="checkbox"
-                                    checked={data.member}
-                                    className="checkbox"
-                                    onChange={(e) => setData('member', e.target.checked)}
+                                    type="datetime-local"
+                                    value={data.start_time}
+                                    onChange={(e) => setData('start_time', e.target.value)}
+                                    className="input"
                                 />
-                                Member Booking
-                            </label>
+                                {errors.start_time && <p className="text-red-500">{errors.start_time}</p>}
+
+                                {!data.member && (
+                                    <>
+                                        {/* Waktu Selesai */}
+                                        <label className="label">Waktu Selesai</label>
+                                        <input
+                                            type="datetime-local"
+                                            value={data.end_time}
+                                            onChange={(e) => setData('end_time', e.target.value)}
+                                            className="input"
+                                        />
+                                        {errors.end_time && <p className="text-red-500">{errors.end_time}</p>}
+                                    </>
+                                )}
+                            </>
+                        )}
+
+                        {unit.rental.category.slug === 'kendaraan' && (
+                            <>
+                                {/* Waktu Mulai */}
+                                <label className="label">Waktu Mulai</label>
+                                <input
+                                    type="datetime-local"
+                                    value={data.start_time}
+                                    onChange={(e) => setData('start_time', e.target.value)}
+                                    className="input"
+                                />
+                                {errors.start_time && <p className="text-red-500">{errors.start_time}</p>}
+
+                                {/* Waktu Selesai */}
+                                <label className="label">Waktu Selesai</label>
+                                <input
+                                    type="datetime-local"
+                                    value={data.end_time}
+                                    onChange={(e) => setData('end_time', e.target.value)}
+                                    className="input"
+                                />
+                                {errors.end_time && <p className="text-red-500">{errors.end_time}</p>}
+                            </>
                         )}
 
                         {/* Errors */}

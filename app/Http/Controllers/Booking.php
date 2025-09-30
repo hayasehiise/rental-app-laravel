@@ -21,13 +21,18 @@ class Booking extends Controller
 
     public function store(Request $request, $unitId)
     {
-        $request->validate([
+        $rules = [
             'start_time' => ['required', 'date', 'after_or_equal:now'],
-            'end_time' => ['required', 'date', 'after:start_time'],
-            'discount_code' => ['nullable', 'string'],
-        ]);
+            'member' => ['required', 'boolean'],
+        ];
 
-        $booking = CreateBookingAction::run($request->only('start_time', 'end_time', 'discount_code'), $unitId, $request->user());
+        if (!$request->boolean('member')) {
+            $rules['end_time'] = ['required', 'date', 'after:start_time'];
+        }
+
+        $validated = $request->validate($rules);
+
+        $booking = CreateBookingAction::run($validated, $unitId, $request->user());
 
         return redirect()->route('booking.payment', $booking);
     }

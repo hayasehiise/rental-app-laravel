@@ -31,6 +31,10 @@ interface Discount {
     name: string;
     percentage: number;
 }
+interface ParentBooking {
+    id: number;
+    payment?: Payment | null; // bisa null jika parent booking belum bayar
+}
 interface Booking {
     id: number;
     start_time: string;
@@ -40,7 +44,8 @@ interface Booking {
     final_price: number;
     unit: Unit;
     user: User;
-    payment: Payment;
+    payment?: Payment;
+    parentBooking?: ParentBooking;
     created_at: string;
 }
 interface InvoiceProps {
@@ -68,7 +73,7 @@ export default function InvoiceTemplate({ booking }: InvoiceProps) {
                     </View>
                     <View>
                         <Text style={tw('text-xl font-bold leading-none mb-3')}>INVOICE</Text>
-                        <Text style={tw('text-sm')}>Number: {booking.payment.order_id}</Text>
+                        <Text style={tw('text-sm')}>Number: {booking.payment?.order_id ?? booking.parentBooking?.payment?.order_id}</Text>
                         <Text style={tw('text-sm')}>
                             Date:{' '}
                             {new Date(booking.created_at).toLocaleDateString('id-ID', {

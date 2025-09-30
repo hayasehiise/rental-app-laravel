@@ -33,6 +33,10 @@ interface Discount {
     name: string;
     percentage: number;
 }
+interface ParentBooking {
+    id: number;
+    payment?: Payment | null; // bisa null jika parent booking belum bayar
+}
 interface Booking {
     id: number;
     start_time: string;
@@ -42,7 +46,8 @@ interface Booking {
     final_price: number;
     unit: Unit;
     user: User;
-    payment: Payment;
+    payment?: Payment;
+    parent_booking?: ParentBooking;
     created_at: string;
 }
 interface PageProps extends InertiaPageProps {
@@ -58,7 +63,7 @@ export default function InvoicePage() {
 
             const a = document.createElement('a');
             a.href = url;
-            a.download = `Invoice-${booking.payment.order_id}.pdf`;
+            a.download = `Invoice-${booking.payment?.order_id ?? booking.parent_booking?.payment?.order_id}.pdf`;
             a.click();
 
             URL.revokeObjectURL(url);

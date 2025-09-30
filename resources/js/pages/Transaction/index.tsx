@@ -16,6 +16,10 @@ interface Unit {
     name: string;
     price: number;
 }
+interface ParentBooking {
+    id: number;
+    payment: Payment; // bisa null jika parent booking belum bayar
+}
 interface Booking {
     id: number;
     start_time: string;
@@ -24,6 +28,7 @@ interface Booking {
     final_price: number;
     unit: Unit;
     payment: Payment;
+    parent_booking: ParentBooking;
 }
 
 interface PageProps extends InertiaPageProps {
@@ -51,7 +56,22 @@ export default function TransactionPage() {
         },
         {
             header: 'Order ID',
-            accessorFn: (row) => row.payment.order_id,
+            accessorFn: (row) => row.payment?.order_id ?? row.parent_booking?.payment?.order_id,
+            // cell: ({ row }) => {
+            //     const booking = row.original;
+            //     let orderId = '-';
+
+            //     // Debug: uncomment baris ini untuk melihat data
+            //     console.log('Booking data:', booking);
+
+            //     if (booking.payment?.order_id) {
+            //         orderId = booking.payment.order_id;
+            //     } else if (booking.parent_booking?.payment?.order_id) {
+            //         orderId = booking.parent_booking.payment.order_id;
+            //     }
+
+            //     return <span>{orderId}</span>;
+            // },
         },
         {
             header: 'Jadwal Mulai',

@@ -18,11 +18,17 @@ class CreateBookingAction
 
     public function handle(array $data, int $unitId, User $user): Booking
     {
-        $unit = RentalUnit::with(['rental.category', 'prices'])->findOrFail($unitId);
+        $unit = RentalUnit::with(['rental.category', 'lapanganPrice', 'gedungPrice', 'kendaraanPrice'])->findOrFail($unitId);
 
         $start = Carbon::parse($data['start_time']);
-        $end = Carbon::parse($data['end_time']);
         $isMember = $data['member'];
+
+        if ($isMember) {
+            $end = $start->copy()->addHours(4);
+        } else {
+            if (!isset($data['end_time'])) throw ValidationException::withMessages(['end_time' => 'Waktu Selesai Harus Diisi']);
+            $end = Carbon::parse($data['end_time']);
+        }
 
         // Validasi Sabtu
         $category = $unit->rental->category->slug;
@@ -66,6 +72,7 @@ class CreateBookingAction
                     $finalPrice = $price;
                 }
 
+                // Booking Pertama
                 $booking = Booking::create([
                     'user_id' => $user->id,
                     'rental_unit_id' => $unit->id,
@@ -82,7 +89,60 @@ class CreateBookingAction
                 if ($isMember) {
                     $memberQuota = $lapanganPrice->member_quota;
                     $currentStart = $start->copy();
+                    $currentEnd = $end->copy();
+
+                    for ($i = 1; $i < $memberQuota; $i++) {
+                        $currentStart->addWeek();
+                        $currentEnd->addWeek();
+
+                        $exists = Booking::where('rental_unit_id', $unit->id)
+                            ->whereIn('status', ['pending', 'paid'])
+                            ->where(function ($q) use ($currentStart, $currentEnd) {
+                                $q->whereBetween('start_time', [$currentStart, $currentEnd])
+                                    ->orWhereBetween('end_time', [$currentStart, $currentEnd])
+                                    ->orWhere(function ($q2) use ($currentStart, $currentEnd) {
+                                        $q2->where('start_time', '<=', $currentStart)
+                                            ->where('end_time', '>=', $currentEnd);
+                                    });
+                            })
+                            ->exists();
+
+                        if ($exists) break;
+
+                        Booking::create([
+                            'user_id' => $user->id,
+                            'rental_unit_id' => $unit->id,
+                            'start_time' => $currentStart->copy(),
+                            'end_time' => $currentEnd->copy(),
+                            'price' => $price,
+                            'final_price' => $finalPrice,
+                            'status' => 'pending',
+                            'parent_booking_id' => $booking->id,
+                        ]);
+                    }
                 }
+            }
+
+            if ($category === 'kendaraan') {
+                $kendaraanPrice = $unit->kendaraanPrice;
+
+                // Hitung Hari (minimal 1 hari)
+                $days = max(1, $start->diffInDays($end) + ($end->gt($start->copy()->addDays($start->diffInDays($end))) ? 1 : 0));
+
+                $price = $kendaraanPrice->price * $days;
+                $finalPrice = $price;
+
+                $booking = Booking::create([
+                    'user_id' => $user->id,
+                    'rental_unit_id' => $unit->id,
+                    'start_time' => $start,
+                    'end_time' => $end,
+                    'price' => $price,
+                    'final_price' => $finalPrice,
+                    'status' => 'pending',
+                ]);
+
+                event(new BookingCreated($booking));
             }
 
             return $booking;

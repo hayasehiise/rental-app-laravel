@@ -24,6 +24,8 @@ return new class extends Migration
             $table->unsignedBigInteger('final_price');
             // Status booking
             $table->enum('status', ['pending', 'paid', 'cancelled'])->default('pending');
+            // parent booking (Kalau ada)
+            $table->unsignedInteger('parent_booking_id')->nullable();
             $table->timestamps();
         });
     }
