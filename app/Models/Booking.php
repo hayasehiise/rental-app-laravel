@@ -19,6 +19,7 @@ class Booking extends Model
         'price',
         'final_price',
         'status',
+        'parent_booking_id'
     ];
 
     protected $casts = [
@@ -46,6 +47,10 @@ class Booking extends Model
     public function discounts(): BelongsToMany
     {
         return $this->belongsToMany(Discount::class, 'booking_discounts', 'booking_id', 'discount_id')->withTimestamps();
+    }
+    public function parentBooking(): BelongsTo
+    {
+        return $this->belongsTo(Booking::class, 'parent_booking_id', 'id');
     }
 
     // Helpers

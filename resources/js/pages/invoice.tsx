@@ -1,5 +1,4 @@
 import InvoiceTemplate from '@/components/InvoiceTemplate';
-import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { usePage } from '@inertiajs/react';
 import { pdf } from '@react-pdf/renderer';
 import { useEffect } from 'react';
@@ -23,6 +22,12 @@ interface Unit {
     id: number;
     name: string;
     rental: Rental;
+    gedung_price?: {
+        id: number;
+        price: number;
+        pax: number;
+        per_day: number;
+    } | null; // bisa null jika bukan gedung
 }
 interface Payment {
     id: number;
@@ -33,6 +38,10 @@ interface Discount {
     name: string;
     percentage: number;
 }
+interface ParentBooking {
+    id: number;
+    payment?: Payment | null; // bisa null jika parent booking belum bayar
+}
 interface Booking {
     id: number;
     start_time: string;
@@ -42,14 +51,12 @@ interface Booking {
     final_price: number;
     unit: Unit;
     user: User;
-    payment: Payment;
+    payment?: Payment;
+    parent_booking?: ParentBooking;
     created_at: string;
 }
-interface PageProps extends InertiaPageProps {
-    booking: Booking;
-}
 export default function InvoicePage() {
-    const { booking } = usePage<PageProps>().props;
+    const { booking } = usePage<{ booking: Booking }>().props;
 
     useEffect(() => {
         const generatePdf = async () => {
@@ -58,7 +65,7 @@ export default function InvoicePage() {
 
             const a = document.createElement('a');
             a.href = url;
-            a.download = `Invoice-${booking.payment.order_id}.pdf`;
+            a.download = `Invoice-${booking.payment?.order_id ?? booking.parent_booking?.payment?.order_id}.pdf`;
             a.click();
 
             URL.revokeObjectURL(url);

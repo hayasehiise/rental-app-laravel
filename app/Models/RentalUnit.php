@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Price\GedungPrice;
+use App\Models\Price\KendaraanPrice;
+use App\Models\Price\LapanganPrice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class RentalUnit extends Model
 {
@@ -30,16 +34,16 @@ class RentalUnit extends Model
     {
         return $this->hasMany(Booking::class);
     }
-    public function prices(): HasMany
+    public function lapanganPrice(): HasOne
     {
-        return $this->hasMany(RentalUnitPrice::class, 'rental_unit_id');
+        return $this->hasOne(LapanganPrice::class);
     }
-
-    // helper method
-    public function getPriceFor(string $type): ?float
+    public function gedungPrice(): HasMany
     {
-        return $this->prices()
-            ->where('type', $type)
-            ->value('price');
+        return $this->hasMany(GedungPrice::class);
+    }
+    public function kendaraanPrice(): HasOne
+    {
+        return $this->hasOne(KendaraanPrice::class);
     }
 }

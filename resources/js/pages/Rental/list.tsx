@@ -13,8 +13,7 @@ interface RentalUnitImage {
     path: string;
 }
 interface RentalUnitPrice {
-    id: number;
-    type: string;
+    label: string;
     price: number;
 }
 interface RentalUnit {
@@ -22,7 +21,7 @@ interface RentalUnit {
     name: string;
     is_available: boolean;
     image: RentalUnitImage[];
-    prices: RentalUnitPrice[];
+    formattedPrices: RentalUnitPrice[];
 }
 
 interface RentalCategory {
@@ -60,7 +59,6 @@ function UnitCard({ unit }: { unit: RentalUnit }) {
     useEffect(() => {
         gsap.fromTo(`unit-image-${unit.id}`, { opacity: 0 }, { opacity: 1, duration: 1, ease: 'power2.inOut' });
     }, [index, unit.id]);
-
     return (
         <div className="card w-96 bg-white shadow-sm">
             <figure>
@@ -77,11 +75,17 @@ function UnitCard({ unit }: { unit: RentalUnit }) {
                     {unit.name} {unit.is_available ? <FaCheckCircle className="fill-success" /> : <FaTimesCircle className="fill-error" />}
                 </h2>
                 {/* <p>{formatRupiah(unit.price)}</p> */}
-                {unit.prices.map((p) => (
-                    <p key={p.id} className="text-sm">
-                        {p.type === 'hourly' && `Per Jam: ${formatRupiah(p.price)}`}
-                        {p.type === 'daily' && `Per Hari: ${formatRupiah(p.price)}`}
-                        {p.type === 'monthly' && `Per Bulan: ${formatRupiah(p.price)}`}
+                {/* {unit.prices.map((p) => (
+                    <p key={p.id} className="flex gap-2 text-sm">
+                        <span>{p.type.toUpperCase()}</span>
+                        <span>{formatRupiah(p.price)}</span>
+                    </p>
+                ))} */}
+
+                {/* Tampilkan harga */}
+                {unit.formattedPrices.map((p, idx) => (
+                    <p key={idx} className="text-sm">
+                        {p.label}: {formatRupiah(p.price)}
                     </p>
                 ))}
                 <div className="card-actions justify-end">
