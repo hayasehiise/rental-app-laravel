@@ -1,5 +1,4 @@
 import Layout from '@/layouts/layout';
-import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { router, usePage } from '@inertiajs/react';
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
@@ -31,15 +30,13 @@ interface Booking {
     parent_booking: ParentBooking;
 }
 
-interface PageProps extends InertiaPageProps {
-    bookings: {
-        data: Booking[];
-        current_page: number;
-        last_page: number;
-    };
+interface BookingsProps {
+    data: Booking[];
+    current_page: number;
+    last_page: number;
 }
 export default function TransactionPage() {
-    const { bookings: initialBookings } = usePage<PageProps>().props;
+    const { bookings: initialBookings } = usePage<{ bookings: BookingsProps }>().props;
     const [bookings, setBookings] = useState<Booking[]>(initialBookings.data);
     const [currentPage, setCurrentPage] = useState<number>(initialBookings.current_page);
     const [lastPage, setLastPage] = useState<number>(initialBookings.last_page);
@@ -57,21 +54,6 @@ export default function TransactionPage() {
         {
             header: 'Order ID',
             accessorFn: (row) => row.payment?.order_id ?? row.parent_booking?.payment?.order_id,
-            // cell: ({ row }) => {
-            //     const booking = row.original;
-            //     let orderId = '-';
-
-            //     // Debug: uncomment baris ini untuk melihat data
-            //     console.log('Booking data:', booking);
-
-            //     if (booking.payment?.order_id) {
-            //         orderId = booking.payment.order_id;
-            //     } else if (booking.parent_booking?.payment?.order_id) {
-            //         orderId = booking.parent_booking.payment.order_id;
-            //     }
-
-            //     return <span>{orderId}</span>;
-            // },
         },
         {
             header: 'Jadwal Mulai',

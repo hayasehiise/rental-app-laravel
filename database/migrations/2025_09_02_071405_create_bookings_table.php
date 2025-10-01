@@ -23,9 +23,11 @@ return new class extends Migration
             $table->unsignedBigInteger('price');
             $table->unsignedBigInteger('final_price');
             // Status booking
-            $table->enum('status', ['pending', 'paid', 'cancelled'])->default('pending');
+            $table->enum('status', ['pending', 'paid', 'cancelled'])->default('pending')->comment('Status Dari Booking');
             // parent booking (Kalau ada)
-            $table->unsignedInteger('parent_booking_id')->nullable();
+            $table->unsignedInteger('parent_booking_id')->nullable()->comment('ID booking induk, jika ini adalah booking berulang');
+            // relasi ke table all price
+            $table->unsignedBigInteger('price_id')->nullable()->comment('ID dari tabel harga (lapangan, kendaraan, gedung, dll)');
             $table->timestamps();
         });
     }
