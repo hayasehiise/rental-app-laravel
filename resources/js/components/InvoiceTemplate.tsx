@@ -45,7 +45,7 @@ interface Booking {
     unit: Unit;
     user: User;
     payment?: Payment;
-    parentBooking?: ParentBooking;
+    parent_booking?: ParentBooking;
     created_at: string;
 }
 interface InvoiceProps {
@@ -73,7 +73,7 @@ export default function InvoiceTemplate({ booking }: InvoiceProps) {
                     </View>
                     <View>
                         <Text style={tw('text-xl font-bold leading-none mb-3')}>INVOICE</Text>
-                        <Text style={tw('text-sm')}>Number: {booking.payment?.order_id ?? booking.parentBooking?.payment?.order_id}</Text>
+                        <Text style={tw('text-sm')}>Number: {booking.payment?.order_id ?? booking.parent_booking?.payment?.order_id}</Text>
                         <Text style={tw('text-sm')}>
                             Date:{' '}
                             {new Date(booking.created_at).toLocaleDateString('id-ID', {

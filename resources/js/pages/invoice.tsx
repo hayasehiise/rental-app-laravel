@@ -1,5 +1,4 @@
 import InvoiceTemplate from '@/components/InvoiceTemplate';
-import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { usePage } from '@inertiajs/react';
 import { pdf } from '@react-pdf/renderer';
 import { useEffect } from 'react';
@@ -23,6 +22,12 @@ interface Unit {
     id: number;
     name: string;
     rental: Rental;
+    gedung_price?: {
+        id: number;
+        price: number;
+        pax: number;
+        per_day: number;
+    } | null; // bisa null jika bukan gedung
 }
 interface Payment {
     id: number;
@@ -50,11 +55,8 @@ interface Booking {
     parent_booking?: ParentBooking;
     created_at: string;
 }
-interface PageProps extends InertiaPageProps {
-    booking: Booking;
-}
 export default function InvoicePage() {
-    const { booking } = usePage<PageProps>().props;
+    const { booking } = usePage<{ booking: Booking }>().props;
 
     useEffect(() => {
         const generatePdf = async () => {

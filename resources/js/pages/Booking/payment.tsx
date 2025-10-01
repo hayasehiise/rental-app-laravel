@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Layout from '@/layouts/layout';
-import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { router, usePage } from '@inertiajs/react';
 import { useEffect } from 'react';
 
@@ -10,11 +9,15 @@ declare global {
         snap: any;
     }
 }
-
-interface Unit {
+interface Rental {
     id: number;
     name: string;
-    price: number;
+    description: string;
+    category: {
+        id: number;
+        name: string;
+        slug: string;
+    };
 }
 interface Payment {
     id: number;
@@ -28,6 +31,12 @@ interface Discount {
     name: string;
     percentage: number;
 }
+interface Unit {
+    id: number;
+    name: string;
+    price: number;
+    rental: Rental;
+}
 interface Booking {
     id: number;
     user_id: number;
@@ -40,12 +49,13 @@ interface Booking {
     unit: Unit;
     payment: Payment;
 }
-interface PageProps extends InertiaPageProps {
-    snapToken: string;
-    booking: Booking;
-}
+// interface PageProps extends InertiaPageProps {
+//     snapToken: string;
+//     booking: Booking;
+// }
 export default function PaymentPage() {
-    const { snapToken, booking } = usePage<PageProps>().props;
+    const { snapToken, booking } = usePage<{ snapToken: string; booking: Booking }>().props;
+    console.log(usePage().props as any);
 
     useEffect(() => {
         const script = document.createElement('script');
@@ -90,7 +100,7 @@ export default function PaymentPage() {
                     <div className="space-y-4">
                         <p>
                             <span className="font-semibold">Unit : </span>
-                            {booking.unit.name}
+                            {booking.unit.rental.name} - {booking.unit.name}
                         </p>
                         <p>
                             <span className="font-semibold">Waktu Mulai : </span>

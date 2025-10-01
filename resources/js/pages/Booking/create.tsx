@@ -1,5 +1,5 @@
 import Layout from '@/layouts/layout';
-import { PageProps as InertiaPageProps } from '@inertiajs/core';
+// import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { useForm, usePage } from '@inertiajs/react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 
@@ -26,34 +26,35 @@ interface Unit {
     rental: {
         category: RentalCategory;
     };
-    lapanganPrice?: {
+    lapangan_price?: {
         guest_price: number;
         member_price: number;
         member_quota: number;
     };
-    gedungPrice?: {
+    gedung_price?: {
         type: string;
-        pax?: number;
-        per_day?: number;
+        pax?: number | null | undefined;
+        per_day?: number | null | undefined;
         price: number;
     };
-    kendaraan?: {
+    kendaraan_price?: {
         price: number;
     };
 }
 
-interface PageProps extends InertiaPageProps {
-    unit: Unit;
-    bookings: Booking[];
-    errors: Record<string, string>;
-}
+// interface PageProps {
+//     unit: Unit;
+//     bookings: Booking[];
+//     errors: Record<string, string>;
+// }
 
 export default function BookingPage() {
-    const { unit, bookings, errors: pageErrors } = usePage<PageProps>().props;
+    const { unit, bookings, errors: pageErrors } = usePage<{ unit: Unit; bookings: Booking[]; errors: Record<string, string> }>().props;
     const { data, setData, post, processing, errors } = useForm({
         start_time: '',
         end_time: '',
         member: false,
+        gedung_price_id: 0,
     });
     const [dataError, setDataError] = useState<string | null>(null);
 
@@ -91,8 +92,6 @@ export default function BookingPage() {
         e.preventDefault();
 
         if (dataError) return;
-
-        console.log(data);
 
         post(route('booking.store', unit.id), {});
     }
@@ -163,6 +162,72 @@ export default function BookingPage() {
                                     className="input"
                                 />
                                 {errors.end_time && <p className="text-red-500">{errors.end_time}</p>}
+                            </>
+                        )}
+
+                        {unit.rental.category.slug === 'gedung' && (
+                            <>
+                                {/* Waktu Mulai */}
+                                <label className="label">Waktu Mulai</label>
+                                <input
+                                    type="datetime-local"
+                                    value={data.start_time}
+                                    onChange={(e) => setData('start_time', e.target.value)}
+                                    className="input"
+                                />
+                                {errors.start_time && <p className="text-red-500">{errors.start_time}</p>}
+
+                                {unit.gedung_price?.some((p) => p.pax !== null) ? (
+                                    <>
+                                        <label className="label">Pilih Paket (Pax + Hari)</label>
+                                        <select
+                                            className="select"
+                                            value={data.gedung_price_id}
+                                            onChange={(e) => setData('gedung_price_id', parseInt(e.target.value))}
+                                        >
+                                            <option value={''}>-- Pilih Paket --</option>
+                                            {unit.gedung_price?.map((p: { id: number; pax: number; per_day: number; price: number }) => {
+                                                return (
+                                                    <option key={p.id} value={p.id}>
+                                                        {p.pax} Pax - {p.per_day} Hari ➡️{' '}
+                                                        {p.price.toLocaleString('id-ID', {
+                                                            style: 'currency',
+                                                            currency: 'IDR',
+                                                            currencyDisplay: 'narrowSymbol',
+                                                            maximumFractionDigits: 0,
+                                                        })}
+                                                    </option>
+                                                );
+                                            })}
+                                        </select>
+                                        {errors.gedung_price_id && <p className="text-red-500">{errors.gedung_price_id}</p>}
+                                    </>
+                                ) : (
+                                    <>
+                                        <label className="label">Pilih Paket (Hari)</label>
+                                        <select
+                                            className="select"
+                                            value={data.gedung_price_id}
+                                            onChange={(e) => setData('gedung_price_id', parseInt(e.target.value))}
+                                        >
+                                            <option value={''}>-- Pilih Paket --</option>
+                                            {unit.gedung_price?.map((p: { id: number; pax: number; per_day: number; price: number }) => {
+                                                return (
+                                                    <option key={p.id} value={p.id}>
+                                                        {p.per_day} Hari ➡️{' '}
+                                                        {p.price.toLocaleString('id-ID', {
+                                                            style: 'currency',
+                                                            currency: 'IDR',
+                                                            currencyDisplay: 'narrowSymbol',
+                                                            maximumFractionDigits: 0,
+                                                        })}
+                                                    </option>
+                                                );
+                                            })}
+                                        </select>
+                                        {errors.gedung_price_id && <p className="text-red-500">{errors.gedung_price_id}</p>}
+                                    </>
+                                )}
                             </>
                         )}
 

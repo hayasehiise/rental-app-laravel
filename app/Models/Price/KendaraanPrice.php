@@ -13,6 +13,10 @@ class KendaraanPrice extends Model
         'price',
     ];
 
+    protected $casts = [
+        'price' => 'integer',
+    ];
+
     public function unit(): BelongsTo
     {
         return $this->belongsTo(RentalUnit::class, 'rental_unit_id');

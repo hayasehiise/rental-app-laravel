@@ -24,8 +24,6 @@ class GetBookingCreateDataAction
             ->whereDate('start_time', '>=', now()->toDateString())
             ->get();
 
-        dd($unit);
-
         return compact('unit', 'bookings');
     }
 }

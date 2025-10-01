@@ -19,19 +19,29 @@ class CreateBookingAction
     public function handle(array $data, int $unitId, User $user): Booking
     {
         $unit = RentalUnit::with(['rental.category', 'lapanganPrice', 'gedungPrice', 'kendaraanPrice'])->findOrFail($unitId);
+        $category = $unit->rental->category->slug;
 
         $start = Carbon::parse($data['start_time']);
-        $isMember = $data['member'];
+        $isMember = false;
+        $end = null;
 
-        if ($isMember) {
-            $end = $start->copy()->addHours(4);
-        } else {
-            if (!isset($data['end_time'])) throw ValidationException::withMessages(['end_time' => 'Waktu Selesai Harus Diisi']);
+        // tentukan end_time untuk tiap kategori
+        if ($category === 'lapangan') {
+            $isMember = $data['member'];
+
+            if ($isMember) {
+                $end = $start->copy()->addHours(4);
+            } else {
+                $end = Carbon::parse($data['end_time']);
+            }
+        } elseif ($category === 'gedung') {
+            $gedungPrice = $unit->gedungPrice->where('id', $data['gedung_price_id'])->first();
+            $end = $start->copy()->addDays($gedungPrice->per_day);
+        } elseif ($category === 'kendaraan') {
             $end = Carbon::parse($data['end_time']);
         }
 
         // Validasi Sabtu
-        $category = $unit->rental->category->slug;
         if ((in_array($category, ['lapangan', 'gedung'])) && ($start->isSaturday() || $end->isSaturday())) {
             throw ValidationException::withMessages([
                 'booking' => 'Tidak bisa booking pada hari sabtu',
@@ -130,6 +140,25 @@ class CreateBookingAction
                 $days = max(1, $start->diffInDays($end) + ($end->gt($start->copy()->addDays($start->diffInDays($end))) ? 1 : 0));
 
                 $price = $kendaraanPrice->price * $days;
+                $finalPrice = $price;
+
+                $booking = Booking::create([
+                    'user_id' => $user->id,
+                    'rental_unit_id' => $unit->id,
+                    'start_time' => $start,
+                    'end_time' => $end,
+                    'price' => $price,
+                    'final_price' => $finalPrice,
+                    'status' => 'pending',
+                ]);
+
+                event(new BookingCreated($booking));
+            }
+
+            if ($category === 'gedung') {
+                $gedungPrice = $unit->gedungPrice->where('id', $data['gedung_price_id'])->first();
+
+                $price = $gedungPrice->price;
                 $finalPrice = $price;
 
                 $booking = Booking::create([

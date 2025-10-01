@@ -15,6 +15,12 @@ class LapanganPrice extends Model
         'member_quota',
     ];
 
+    protected $casts = [
+        'guest_price' => 'integer',
+        'member_price' => 'integer',
+        'member_quota' => 'integer',
+    ];
+
     public function unit(): BelongsTo
     {
         return $this->belongsTo(RentalUnit::class, 'rental_unit_id');

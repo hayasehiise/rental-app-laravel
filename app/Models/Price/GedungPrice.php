@@ -16,6 +16,12 @@ class GedungPrice extends Model
         'price',
     ];
 
+    protected $casts = [
+        'price' => 'integer',
+        'pax' => 'integer',
+        'per_day' => 'integer',
+    ];
+
     public function unit(): BelongsTo
     {
         return $this->belongsTo(RentalUnit::class, 'rental_unit_id');
