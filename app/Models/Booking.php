@@ -19,7 +19,8 @@ class Booking extends Model
         'price',
         'final_price',
         'status',
-        'parent_booking_id'
+        'parent_booking_id',
+        'price_id',
     ];
 
     protected $casts = [
@@ -51,6 +52,18 @@ class Booking extends Model
     public function parentBooking(): BelongsTo
     {
         return $this->belongsTo(Booking::class, 'parent_booking_id', 'id');
+    }
+    public function lapanganPrice(): BelongsTo
+    {
+        return $this->belongsTo(LapanganPrice::class, 'price_id', 'id');
+    }
+    public function gedungPrice(): BelongsTo
+    {
+        return $this->belongsTo(GedungPrice::class, 'price_id', 'id');
+    }
+    public function kendaraanPrice(): BelongsTo
+    {
+        return $this->belongsTo(KendaraanPrice::class, 'price_id', 'id');
     }
 
     // Helpers

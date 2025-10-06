@@ -91,6 +91,7 @@ class CreateBookingAction
                     'price' => $price,
                     'final_price' => $finalPrice,
                     'status' => 'pending',
+                    'price_id' => $lapanganPrice->id,
                 ]);
 
                 // trigger event
@@ -128,6 +129,7 @@ class CreateBookingAction
                             'final_price' => $finalPrice,
                             'status' => 'pending',
                             'parent_booking_id' => $booking->id,
+                            'price_id' => $lapanganPrice->id,
                         ]);
                     }
                 }
@@ -150,6 +152,7 @@ class CreateBookingAction
                     'price' => $price,
                     'final_price' => $finalPrice,
                     'status' => 'pending',
+                    'price_id' => $kendaraanPrice->id,
                 ]);
 
                 event(new BookingCreated($booking));
@@ -169,6 +172,7 @@ class CreateBookingAction
                     'price' => $price,
                     'final_price' => $finalPrice,
                     'status' => 'pending',
+                    'price_id' => $gedungPrice->id,
                 ]);
 
                 event(new BookingCreated($booking));

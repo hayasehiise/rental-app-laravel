@@ -2,8 +2,10 @@
 
 namespace App\Models\Price;
 
+use App\Models\Booking;
 use App\Models\RentalUnit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class LapanganPrice extends Model
@@ -24,5 +26,9 @@ class LapanganPrice extends Model
     public function unit(): BelongsTo
     {
         return $this->belongsTo(RentalUnit::class, 'rental_unit_id');
+    }
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class, 'price_id');
     }
 }

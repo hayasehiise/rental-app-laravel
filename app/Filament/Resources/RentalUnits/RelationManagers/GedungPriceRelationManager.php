@@ -44,7 +44,8 @@ class GedungPriceRelationManager extends RelationManager
                 TextInput::make('per_day')
                     ->label('Hari')
                     ->numeric()
-                    ->suffix('Hari'),
+                    ->suffix('Hari')
+                    ->required(),
                 TextInput::make('price')
                     ->label('Harga')
                     ->numeric()
@@ -63,10 +64,10 @@ class GedungPriceRelationManager extends RelationManager
                     ->getStateUsing(fn($record) => $record->type === 'pax' ? 'PAX' : 'DAY'),
                 TextColumn::make('pax')
                     ->label('PAX')
-                    ->getStateUsing(fn($record) => $record->pax . ' Person' ?? '-'),
+                    ->getStateUsing(fn($record) => $record->type === 'pax' ? $record->pax . ' Person' : '-'),
                 TextColumn::make('per_days')
                     ->label('Hari')
-                    ->getStateUsing(fn($record) => $record->per_day . ' Hari' ?? '-'),
+                    ->getStateUsing(fn($record) => $record->per_day . ' Hari'),
                 TextColumn::make('price')
                     ->label('Harga')
                     ->getStateUsing(fn($record) => 'Rp.' . number_format($record->price, 0, ',', '.')),
