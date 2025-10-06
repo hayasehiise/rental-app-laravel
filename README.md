@@ -10,21 +10,23 @@ Project Aplikasi Rental Menggunakan Laravel + Inertia + Filament. berisi konten 
 
 untuk Environment ada tambahan berupa:
 
-// Midtrans Integration
-
+#### Midtrans Integration
+``` bash
 MIDTRANS_SERVER_KEY=<Server Key dari Midtranss>
 MIDTRANS_CLIENT_KEY=<Client Key dari Midtrans>
 MIDTRANS_IS_PRODUCTION=false <- ubah true jika production
+```
 
-// Telegram Integration
-
+#### Telegram Integration
+```bash
 TELEGRAM_BOT_TOKEN=<Bot Token>
 TELEGRAM_CHAT_ID=<Chat Id Telegram>
-
-// Frontend
-
+```
+#### Frontend
+```bash
 VITE_MIDTRANS_CLIENT_KEY=<Client Key Midtrans>
 VITE_VITE_MIDTRANS_IS_PRODUCTION=false
+```
 ## Installation
 
 Install project ini menggunakan composer dan npm/pnpm
