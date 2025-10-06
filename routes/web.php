@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\Admin\PrintTransactionAction;
 use App\Http\Controllers\Auth\FrontendAuth;
 use App\Http\Controllers\Auth\PasswordReset;
 use App\Http\Controllers\Booking;
@@ -39,8 +40,14 @@ Route::middleware(['isUser'])->group(function () {
     Route::get('/transaction', [Transaction::class, 'index'])->name('transaction.index');
 });
 
+// Invoice Download
 Route::get('/invoice/{booking}', [Invoice::class, 'download'])->middleware(['auth'])->name('invoice.download');
 
+// Midtrans Payment Callback
 Route::post('/payment/midtrans/callback', [Payment::class, 'callback'])->name('payment.callback');
 
+// Email verification
 Route::get('/register/verify/{token}', [FrontendAuth::class, 'verify'])->name('register.verify');
+
+// Admin Transaction Print
+Route::get('transaction/print', PrintTransactionAction::class)->name('transaction.print');

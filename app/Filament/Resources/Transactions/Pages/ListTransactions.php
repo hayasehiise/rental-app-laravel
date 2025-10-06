@@ -2,10 +2,12 @@
 
 namespace App\Filament\Resources\Transactions\Pages;
 
-use App\Filament\Resources\Transactions\TransactionResource;
-use App\Filament\Widgets\TransactionStatusWidget;
 use Filament\Actions\CreateAction;
+use App\Http\Controllers\Transaction;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Widgets\TransactionPrintWidget;
+use App\Filament\Widgets\TransactionStatusWidget;
+use App\Filament\Resources\Transactions\TransactionResource;
 
 class ListTransactions extends ListRecords
 {
@@ -22,6 +24,7 @@ class ListTransactions extends ListRecords
     {
         return [
             TransactionStatusWidget::class,
+            TransactionPrintWidget::class,
         ];
     }
 }
