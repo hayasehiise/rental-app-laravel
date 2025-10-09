@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schedule;
 
 // Artisan::command('inspire', function () {
@@ -11,3 +12,6 @@ use Illuminate\Support\Facades\Schedule;
 Schedule::command('bookings:cancel-expired')->everyMinute();
 Schedule::command('users:cleanup-expired')->hourly();
 Schedule::command('queue:work --once')->everyMinute();
+Schedule::call(function () {
+    Log::info('Schedule test: ' . now());
+});
